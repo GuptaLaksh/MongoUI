@@ -22,6 +22,7 @@ tr:nth-child(even) {
 
 .logo {
     width: 210px;
+    margin-bottom: auto;
 }
 
 th.prime,
