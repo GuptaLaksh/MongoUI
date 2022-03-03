@@ -1,0 +1,30 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 99%;
+    margin-bottom: 10px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.greetings {
+    float: right;
+    margin: auto;
+}
+
+.logo {
+    width: 210px;
+}
+
+th.prime,
+td.prime {
+    text-align: center;
+}
