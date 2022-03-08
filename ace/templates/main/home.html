@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Home{% endblock %} {% block css %}
+{% extends 'base.html' %} {% load static %} {% block title %}Databases{% endblock %} {% block css %}
 <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}"> {% endblock %}
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
 
@@ -8,19 +8,21 @@
 
 <header>
     <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
-
-    <p class="greetings"><a href="{% url 'logout' %}"><button class="button btn-primary" ><h5>Log Out</h5></button></a></p>
-    <p class="greetings">Hi <b>{{ user.username }}</b>!</p>
+    
+    <p>{% include 'main/includes/messages.html' %}</p>  
+    
+    <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark" ><h5>Log Out</h5></button></a></span>
+    <span class="greetings"><h5 class="username">Hi <b>{{ user.username }}</b>!</h5></span>
 </header>
 
 <!--<p>Hi {{ user.password }}!</p>-->
 
-<nav>
-    <h1>Databases</h1>
-</nav>
+</br>
 
 <table class="center">
     <tr>
+        <th>Databases</th>
+    </tr>
         <th>Name</th>
         <th class="prime">Size</th>
         <th class="prime">Delete Database</th>

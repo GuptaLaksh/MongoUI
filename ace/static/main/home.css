@@ -15,6 +15,10 @@ tr:nth-child(even) {
     background-color: #dddddd;
 }
 
+span {
+    margin-top: 30px;
+}
+
 .greetings {
     float: right;
     margin: auto;
@@ -28,4 +32,22 @@ tr:nth-child(even) {
 th.prime,
 td.prime {
     text-align: center;
+}
+
+.greetings button {
+    padding: 2px 2px 0px 0px;
+}
+
+.username {
+    margin-top: 5px;
+    margin-bottom: 0;
+    margin-right: 5px;
+}
+
+.error {
+    color: red;
+}
+
+.info {
+    color: green;
 }

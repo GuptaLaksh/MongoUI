@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Home{% endblock %}
+{% extends 'base.html' %} {% load static %} {% block title %}Collections{% endblock %}
 
 
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
@@ -7,14 +7,23 @@
 <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}"> {% endblock %} {% block content %}
 
 <header><a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
-  <p class="greetings"><a href="{% url 'logout' %}"><button class="button btn-primary" ><h5>Log Out</h5></button></a></p>
-    <p class="greetings">Hi <b>{{ user.username }}</b>!</p>
+
+ 
+  <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark" ><h5>Log Out</h5></button></a></span>
+    <span class="greetings"><h5 class="username">Hi <b>{{ user.username }}</b>!</h5></span>
 </header>
 
-
-
+<!--
 <nav>
-<p><b><a href="{% url 'showdbs' %}">{{db}}</a></b> Database</p>
+<select name="databases" id="databases">
+  {% for dbname in dbs %}
+  <option value="{{dbname}}">{{dbname}}</option>
+  {% endfor %}
+</select>
+</nav>
+-->
+<nav>
+<p><b><h5><a href="{% url 'showdbs' %}"><button>{{db}}</button></a></h5></b></p>
 </nav>
 
 <table>
