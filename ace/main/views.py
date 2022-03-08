@@ -20,9 +20,6 @@ c = None
 # Create Views
 
 
-        
-
-
 def logout_request(request):
     logout(request)
     messages.info(request, "Logout Succesfully!!")
@@ -41,65 +38,46 @@ def login_request(request):
 
             global c
             c = get_db_handle(username, password)
-            
+
             for db in c.list_databases():
-                dbs.append(db)  
+                dbs.append(db)
             if user is not None:
                 login(request, user)
-                
-                messages.info(request,f"You are now logged in as {username}")
+
+                messages.info(request, f"You are now logged in as {username}")
                 print(f"You are now logged in as {username}")
-                
+
                 return redirect('/')
             else:
-                messages.error(request,"Invalid username or password.")
-                print(request,"Invalid username or password.")
+                messages.error(request, "Invalid username or password.")
+                print(request, "Invalid username or password.")
 
         else:
             messages.error(request, "Invalid username or password.")
-            
-    
-    return render(request,"main/login.html",context={"dbs" : dbs,"form":form})
+
+    return render(request, "main/login.html", context={"dbs": dbs, "form": form})
 
 
 def showdbs(request):
-    
+
     dbs = []
     for db in c.list_databases():
-        dbs.append(db)  
-    #return HttpResponse(request)
-    return render(request,"main/home.html",context={"dbs" : dbs})
-
+        dbs.append(db)
+    # return HttpResponse(request)
+    return render(request, "main/home.html", context={"dbs": dbs})
 
 
 def showCollections(request, db):
     collections = c[db].list_collection_names()
-    return render(request, "main/pagecollection.html", context = {"db": db, "collections" : collections})
+    return render(request, "main/pagecollection.html", context={"db": db, "collections": collections})
 
-    #print(client['Microbot_MappingsDB'].list_collection_names())
+    # print(client['Microbot_MappingsDB'].list_collection_names())
 
 
-def showdocs(request,db,collection):
+def showdocs(request, db, collection):
     collections = c[db][collection]
     documents = collections.find({})
-    
+
     for document in documents:
         print(document)
-    return render(request, "main/documents.html",context = {"db": db, "collection" : collection, "collections":collections, "documents" : documents})
-
-'''
-def register(request):
-    if request=='POST':
-        form = UserCreationForm(request.POST)
-
-            username = form.cleaned_data['username']
-        
-            password = form.cleaned_data['password1']
-            user = authenticate(username=username,password=password)
-            -> login(request, user)
-            return redirect('index')
-
-    
-    context = {'form':form}
-    return render(request,'registration/register.html',context)
-'''
+    return render(request, "main/documents.html", context={"db": db, "collection": collection, "collections": collections, "documents": documents})
