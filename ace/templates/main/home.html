@@ -1,52 +1,69 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Databases{% endblock %} {% block css %}
-<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}"> {% endblock %}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Databases{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
+{% endblock css %}
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
-
-
-
-{% block content %} {% if user.is_authenticated %}
-
-<header>
-    <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
-    
-    <p>{% include 'main/includes/messages.html' %}</p>  
-    
-    <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark" ><h5>Log Out</h5></button></a></span>
-    <span class="greetings"><h5 class="username">Hi <b>{{ user.username }}</b>!</h5></span>
-</header>
-
-<!--<p>Hi {{ user.password }}!</p>-->
-
-</br>
-
-<table class="center">
-    <tr>
-        <th>Databases</th>
-    </tr>
+{% block content %}
+    {% if user.is_authenticated %}
+        <header>
+            <a href="{% url "showdbs" %}">
+                <img class="logo" src="{% static "images/microbots.png" %}">
+            </a>
+            <p>
+                {% include 'main/includes/messages.html' %}
+            </p>
+            <span class="greetings"><a href="{% url "logout" %}">
+                <button class="w-100 btn btn-outline-dark">
+                    <h5>Log Out</h5>
+                </button>
+            </a></span>
+            <span class="greetings">
+                <h5 class="username">
+                    Hi <b>{{ user.username }}</b>!
+                </h5>
+            </span>
+        </header>
+        <!--<p>Hi {{ user.password }}!</p>-->
+    </br>
+    <table class="center">
+        <tr>
+            <th>Databases</th>
+        </tr>
         <th>Name</th>
         <th class="prime">Size</th>
         <th class="prime">Delete Database</th>
     </tr>
-
     {% for dbname in dbs %}
-    <tr>
-        <td><a href="{% url 'base' db=dbname.name %}">{{dbname.name}}</a></td>
-        <td class="prime">{{dbname.sizeOnDisk}}</td>
-        <td class="prime"><button type="button" class="btn btn-outline-danger">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
-</svg>Delete</button></td>
-
-    </tr>
+        <tr>
+            <td>
+                <a href="{% url 'showcollections' db=dbname.name %}">{{ dbname.name }}</a>
+            </td>
+            <td class="prime">{{ dbname.sizeOnDisk }}</td>
+            <td class="prime">
+                <button type="button" class="btn btn-outline-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="16"
+                         height="16"
+                         fill="currentColor"
+                         class="bi bi-trash-fill"
+                         viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                        </path>
+                    </svg>
+                    Delete
+                </button>
+            </td>
+        </tr>
     {% endfor %}
-
 </table>
-
-
 {% else %}
-<p>You are not logged in</p>
+<p>
+    You are not logged in
+</p>
 <a href="{% url 'login' %}">
     <h4>Log In</h4>
 </a>
-
-{% endif %} {% endblock %}
+{% endif %}
+{% endblock %}

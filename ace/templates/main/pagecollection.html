@@ -1,55 +1,81 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Collections{% endblock %}
-
-
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Collections
+{% endblock title %}
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
-
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}"> {% endblock %} {% block content %}
-
-<header><a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
-
- 
-  <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark" ><h5>Log Out</h5></button></a></span>
-    <span class="greetings"><h5 class="username">Hi <b>{{ user.username }}</b>!</h5></span>
+<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
+{% endblock %}
+{% block content %}
+<header>
+  <a href="{% url 'showdbs' %}">
+    <img class="logo" src="{% static 'images/microbots.png' %}">
+  </a>
+  <span class="greetings"><a href="{% url 'logout' %}">
+      <button class="w-100 btn btn-outline-dark">
+        <h5>Log Out</h5>
+      </button>
+    </a></span>
+  <span class="greetings">
+    <h5 class="username">
+      Hi <b>{{ user.username }}</b>!
+    </h5>
+  </span>
 </header>
-
 <!--
 <nav>
 <select name="databases" id="databases">
-  {% for dbname in dbs %}
-  <option value="{{dbname}}">{{dbname}}</option>
-  {% endfor %}
+  {% for dbname in dbs %}  <option value="{{dbname}}">{{dbname}}</option>{% endfor %}
 </select>
 </nav>
 -->
 <nav>
-<p><b><h5><a href="{% url 'showdbs' %}"><button>{{db}}</button></a></h5></b></p>
+  <p>
+    <b>
+      <h5>
+        <a href="{% url 'showdbs' %}">
+          <button>{{db}}</button>
+        </a>
+      </h5>
+    </b>
+  </p>
 </nav>
-
 <table>
-    <tr>
-        <th>Name</th>
-        <th class="prime">View Database</th>
-        <th class="prime">Delete Database</th>
-    </tr>
-    {% for collection in collections %}
-    <tr>
-        <td ><a href="#">{{collection}}</a></td>
-        <td class="prime"><button type="button" class="btn btn-success">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
-<path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
-</svg>
-    View
-  </button></td>
-        <td class="prime"><button type="button" class="btn btn-outline-danger">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
-</svg>Delete</button></td>
-    </tr>
-    {% endfor %}
-
-    <!--
+  <tr>
+    <th>Name</th>
+    <th class="prime">View Collection</th>
+    <th class="prime">Delete Collection</th>
+  </tr>
+  {% for collection in collections %}
+  <tr>
+    <td>
+      <a href="{% url 'showdocs' db=db collection=collection %}">{{ collection }}</a>
+    </td>
+    <td class="prime">
+      <button type="button" class="btn btn-success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill"
+          viewBox="0 0 16 16">
+          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+          <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+        </svg>
+        View
+      </button>
+    </td>
+    <td class="prime">
+      <button type="button" class="btn btn-outline-danger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
+          viewBox="0 0 16 16">
+          <path
+            d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+          </path>
+        </svg>
+        Delete
+      </button>
+    </td>
+  </tr>
+  {% endfor %}
+  <!--
   {% for dbname in dbs %}
   <tr>
     <td><a href="{% url "base" pk=dbname.name %}">{{dbname.name}}</a></td>
@@ -58,7 +84,4 @@
   {% endfor %}
   -->
 </table>
-
-
-
 {% endblock %}

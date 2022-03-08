@@ -20,6 +20,8 @@ c = None
 # Create Views
 
 
+        
+
 
 def logout_request(request):
     logout(request)
@@ -77,6 +79,13 @@ def showCollections(request, db):
     #print(client['Microbot_MappingsDB'].list_collection_names())
 
 
+def showdocs(request,db,collection):
+    collections = c[db][collection]
+    documents = collections.find({})
+    
+    for document in documents:
+        print(document)
+    return render(request, "main/documents.html",context = {"db": db, "collection" : collection, "collections":collections, "documents" : documents})
 
 '''
 def register(request):
