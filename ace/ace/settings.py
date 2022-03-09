@@ -30,6 +30,9 @@ SECRET_KEY = getenv("SECRET_KEY")
 LIVERELOAD_HOST = getenv("LIVERELOAD_HOST")
 LIVERELOAD_PORT = getenv("LIVERELOAD_PORT")
 
+JSON_EDITOR_JS = getenv("JSON_EDITOR_JS")
+JSON_EDITOR_CSS = getenv("JSON_EDITOR_CSS")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'livereload',
     'main',
     'jazzmin',
+    'jsoneditor',
 ]
 
 MIDDLEWARE = [

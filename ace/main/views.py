@@ -29,31 +29,35 @@ def logout_request(request):
 def login_request(request):
     dbs = []
     form = AuthenticationForm(request=request, data=request.POST)
-    if request.method == 'POST':
-        form = AuthenticationForm(request=request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+    if not request.user.is_authenticated:
+        if request.method == 'POST':
+            form = AuthenticationForm(request=request, data=request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
+                user = authenticate(username=username, password=password)
 
-            global c
-            c = get_db_handle(username, password)
+                global c
+                c = get_db_handle(username, password)
 
-            for db in c.list_databases():
-                dbs.append(db)
-            if user is not None:
-                login(request, user)
+                for db in c.list_databases():
+                    dbs.append(db)
+                if user is not None:
+                    login(request, user)
 
-                messages.info(request, f"You are now logged in as {username}")
-                print(f"You are now logged in as {username}")
+                    messages.info(
+                        request, f"You are now logged in as {username}")
+                    print(f"You are now logged in as {username}")
 
-                return redirect('/')
+                    return redirect('/')
+                else:
+                    messages.error(request, "Invalid username or password.")
+                    print(request, "Invalid username or password.")
+
             else:
                 messages.error(request, "Invalid username or password.")
-                print(request, "Invalid username or password.")
-
-        else:
-            messages.error(request, "Invalid username or password.")
+    else:
+        return redirect('/')
 
     return render(request, "main/login.html", context={"dbs": dbs, "form": form})
 
