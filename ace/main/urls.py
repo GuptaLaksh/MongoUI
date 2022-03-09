@@ -1,6 +1,14 @@
 from . import views
 from django.urls import path
 
+from main.views import (
+    showdbs,
+    login_request,
+    logout_request,
+    showCollections,
+    showdocs
+)
+
 urlpatterns = [
     path('', views.showdbs, name="showdbs"),
     path('login/', views.login_request, name="login"),
