@@ -69,7 +69,7 @@ def showdbs(request):
 
 def showCollections(request, db):
     collections = c[db].list_collection_names()
-    print(collections)
+    # print(collections)
     return render(request, "main/pagecollection.html", context={"db": db, "collections": collections})
 
     # print(client['Microbot_MappingsDB'].list_collection_names())
@@ -80,8 +80,14 @@ def showdocs(request, db, collection):
     documents = collections.find({})
 
     l = []
+    res = {}
     for document in documents:
         l.append(document['_id'])
-        print(type(document))
 
-    return render(request, "main/documents.html", context={"db": db, "collection": collection, "collections": collections, "l": l})
+        # print(type(document))
+
+    return render(request, "main/documents.html", context={"db": db, "collection": collection, "collections": collections, "documents": documents, "l": l})
+
+
+def test(request):
+    return render(request, 'main/test.html')

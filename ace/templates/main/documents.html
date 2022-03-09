@@ -29,29 +29,34 @@
 -->
 <nav>
     <p><b>
-            <h5><a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button></a></h5>
-        </b></p>
+            <h5><a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button></a>
+                <button class="right"><b>Insert Document</b></button>
+        </h5>
+        </b>
+    </p>
+
 </nav>
 
 <table>
     <tr>
-        <th>Name</th>
+        <th>id</th>
         <th class="prime">View Document</th>
         <th class="prime">Delete Document</th>
     </tr>
     {% for document in l %}
     <tr>
-        <td><a href="#">{{ document }}</a></td>
+        <td>{{document}}</td>
         <td class="prime"><button type="button" class="btn btn-success">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-eye-fill" viewBox="0 0 16 16">
-                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
-                    <path
-                        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
-                    </path>
-                </svg>
-                View
-            </button></td>
+                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                        <path
+                            d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                        </path>
+                    </svg>
+                    View
+            </button></a>
+        </td>
         <td class="prime"><button type="button" class="btn btn-outline-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-trash-fill" viewBox="0 0 16 16">

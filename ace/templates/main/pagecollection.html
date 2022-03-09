@@ -8,6 +8,7 @@ Collections
 <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
 {% endblock %}
 {% block content %}
+{% if user.is_authenticated %}
 <header>
   <a href="{% url 'showdbs' %}">
     <img class="logo" src="{% static 'images/microbots.png' %}">
@@ -24,12 +25,12 @@ Collections
   </span>
 </header>
 <!--
-<nav>
-<select name="databases" id="databases">
-  {% for dbname in dbs %}  <option value="{{dbname}}">{{dbname}}</option>{% endfor %}
-</select>
-</nav>
--->
+    <nav>
+    <select name="databases" id="databases">
+      {% for dbname in dbs %}  <option value="{{dbname}}">{{dbname}}</option>{% endfor %}
+    </select>
+    </nav>
+    -->
 <nav>
   <p>
     <b>
@@ -76,12 +77,20 @@ Collections
   </tr>
   {% endfor %}
   <!--
-  {% for dbname in dbs %}
-  <tr>
-    <td><a href="{% url "base" pk=dbname.name %}">{{dbname.name}}</a></td>
-    <td>{{dbname.sizeOnDisk}}</td>
-  </tr>
-  {% endfor %}
-  -->
+      {% for dbname in dbs %}
+      <tr>
+        <td><a href="{% url "base" pk=dbname.name %}">{{dbname.name}}</a></td>
+        <td>{{dbname.sizeOnDisk}}</td>
+      </tr>
+      {% endfor %}
+      -->
 </table>
+{% else %}
+<p>
+  You are not logged in
+</p>
+<a href="{% url 'login' %}">
+  <h4>Log In</h4>
+</a>
+{% endif %}
 {% endblock %}

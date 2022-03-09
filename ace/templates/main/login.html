@@ -18,15 +18,14 @@
         </header>
         <body class="text-center">
             <main class="form-signin">
-                <form method="POST">
+                <form method="POST" action="{{login}}"?next={{request.path}}>
                     {% csrf_token %}
                     <img src="{% static 'images/microbots.png' %}" class='logo'>
                     <br>
                     <h2 class="h3 mb-3 fw-normal headbox">Sign In</h2>
                     {{ form.as_p }}
                     <button class="w-100 btn btn-outline-dark"
-                            type="submit"
-                            onclick="{% url 'showdbs' %}">Sign in</button>
+                            type="submit">Sign In</button>
                 </form>
             </main>
         </body>

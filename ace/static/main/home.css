@@ -51,3 +51,12 @@ td.prime {
 .info {
     color: green;
 }
+
+.prime button a {
+    text-decoration: none;
+    color: white;
+}
+
+.right {
+    float: right;
+}

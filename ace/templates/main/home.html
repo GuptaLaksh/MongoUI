@@ -6,7 +6,7 @@
 {% endblock css %}
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
 {% block content %}
-    {% if user.is_authenticated %}
+    {% if request.user.is_authenticated %}
         <header>
             <a href="{% url "showdbs" %}">
                 <img class="logo" src="{% static "images/microbots.png" %}">

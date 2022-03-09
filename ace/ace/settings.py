@@ -27,12 +27,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = getenv("SECRET_KEY")
+LIVERELOAD_HOST = getenv("LIVERELOAD_HOST")
+LIVERELOAD_PORT = getenv("LIVERELOAD_PORT")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.0.0.18']
-
+ALLOWED_HOSTS = ['10.0.0.18', '127.0.0.1']
 
 
 # Application definition
@@ -44,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'main.apps.MainAdminConfig'
+    # 'main.apps.MainAdminConfig',
+    'livereload',
     'main',
     'jazzmin',
 ]
@@ -57,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'livereload.middleware.LiveReloadScript',
 ]
 
 ROOT_URLCONF = 'ace.urls'
@@ -65,7 +68,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [str(BASE_DIR.joinpath('templates'))],
-        #[BASE_DIR,"templates"],
+        # [BASE_DIR,"templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,8 +80,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
 
 
 WSGI_APPLICATION = 'ace.wsgi.application'
@@ -93,7 +94,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 
 # Password validation
@@ -135,7 +135,6 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_URL = 'static/'
-
 
 
 # Default primary key field type
