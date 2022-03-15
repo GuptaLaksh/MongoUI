@@ -6,7 +6,8 @@ Collections
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
-{% endblock %}
+
+<link rel="stylesheet" type="text/js" href="{% static 'main/home.js' %}">{% endblock %}
 {% block content %}
   {% if user.is_authenticated %}
     <header>
@@ -38,6 +39,7 @@ Collections
             <a href="{% url 'showdbs' %}">
               <button>{{db}}</button>
             </a>
+            <button class="right"><b>Add Collection</b></button>
           </h5>
         </b>
       </p>
@@ -64,7 +66,8 @@ Collections
           </button>
         </td>
         <td class="prime">
-          <button type="button" class="btn btn-outline-danger">
+          
+          <button type="button" class="btn btn-outline-danger" id="remove">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
               viewBox="0 0 16 16">
               <path
@@ -73,6 +76,7 @@ Collections
             </svg>
             Delete
           </button>
+  
         </td>
       </tr>
       {% endfor %}

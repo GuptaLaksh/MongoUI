@@ -4,7 +4,9 @@
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}"> {% endblock %} {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
+<link rel="stylesheet" type="text/js" href="{% static 'main/home.js' %}">
+ {% endblock %} {% block content %}
 
 <header>
     <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
@@ -30,6 +32,7 @@
 <nav>
     <p><b>
             <h5><a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button></a>
+                
                 <button class="right"><b>Insert Document</b></button>
         </h5>
         </b>
@@ -43,11 +46,12 @@
         <th class="prime">View Document</th>
         <th class="prime">Delete Document</th>
     </tr>
-    {% for document in l %}
+    {% for id, doc in tuplist %}
     <tr>
-        <td>{{document}}</td>
-        <td class="prime"><button type="button" class="btn btn-success">
-                <a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+        <td>{{doc}}</td>
+        <td class="prime" id="view">
+            <a href="{% url '_view' db=db collection=collection pk=id %}"><button type="button" class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-eye-fill" viewBox="0 0 16 16">
                         <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
                         <path
@@ -55,15 +59,19 @@
                         </path>
                     </svg>
                     View
-            </button></a>
+            </button>
+        </a>
         </td>
-        <td class="prime"><button type="button" class="btn btn-outline-danger">
+        <td class="prime">
+            <a href="{% url '_delete' db=db collection=collection pk=id %}" onclick="return confirm('Are you sure you want to delete this item?');">
+            <button type="button" class="btn btn-outline-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-trash-fill" viewBox="0 0 16 16">
                     <path
                         d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
                     </path>
-                </svg>Delete</button></td>
+                </svg>Delete</button>
+            </a></td>
     </tr>
     {% endfor %}
 </table>

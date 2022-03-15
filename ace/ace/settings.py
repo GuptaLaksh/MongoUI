@@ -14,6 +14,7 @@ from os import getenv
 from pathlib import Path
 
 from django.template import TemplateSyntaxError
+from django.urls import reverse_lazy
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
@@ -32,6 +33,10 @@ LIVERELOAD_PORT = getenv("LIVERELOAD_PORT")
 
 JSON_EDITOR_JS = getenv("JSON_EDITOR_JS")
 JSON_EDITOR_CSS = getenv("JSON_EDITOR_CSS")
+
+JSON_EDITOR_INIT_JS = "jsoneditor-init.js"
+
+CODEMIRROR_PATH = 'codemirror'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -146,6 +151,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = reverse_lazy('login')
 
-LOGIN_REDIRECT_URL = 'showdbs'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = reverse_lazy('showdbs')
+LOGOUT_REDIRECT_URL = LOGIN_URL
