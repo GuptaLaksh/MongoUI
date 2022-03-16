@@ -5,44 +5,7 @@ body {
     padding: 15px;
 }
 
-textarea {
-    appearance: none;
-    background: none;
-}
-
-textarea:focus {
-    outline: none;
-}
-
-#editor {
-    display: block;
-    border: 1px solid black;
-    margin: 0;
-    padding: 0;
-    overflow: auto;
-    height: 100%;
-    width: 100%;
-    resize: none;
-    font-size: large;
-}
-
-#saveButton {
-    width: 100px;
-    margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    background: rgb(255, 255, 255);
-    border: 3px #00ffbb solid;
-    padding: 10px 50px;
-    border-radius: 10px;
-    float: right;
-}
-
-#saveButton:hover {
-    background: #00ffbb;
-}
-
 .logo {
     width: 210px;
-    margin-bottom: auto;
+    margin-bottom: 20px;
 }
