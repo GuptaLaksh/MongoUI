@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
@@ -75,8 +76,17 @@ def showdbs(request):
 @login_required
 def showCollections(request, db):
     clientInstance = clientpool[request.user.username]
+    collectionlist = []
+    tuplist = []
+    for collection in clientInstance[db].list_collection_names():
+        collectionlist.append((collection, clientInstance[db][collection]))
+
+    for collection, instance in collectionlist:
+        tuplist.append(
+            dict({'name': collection, 'count': instance.estimated_document_count()}))
+
     context = {
-        "db": db, "collections": clientInstance[db].list_collection_names()}
+        "db": db, "tuplist": tuplist}
     return render(request, "main/pagecollection.html", context=context)
 
 
@@ -84,6 +94,7 @@ def showCollections(request, db):
 def showdocs(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
+    # print(collections.estimated_document_count())
     documents = collections.find({})
     tuplist = []
     for document in documents:
@@ -93,7 +104,32 @@ def showdocs(request, db, collection):
 
 
 @login_required
-def _delete(request, db, collection, pk):
+def _deletedatabase(request, db):
+    clientInstance = clientpool[request.user.username]
+    clientInstance.drop_database(db)
+
+    return redirect('showdbs')
+
+
+@login_required
+def _insertdatabase(request):
+    return HttpResponse("Inserted Database!!")
+
+
+@login_required
+def _deletecollection(request, db, collection):
+    clientInstance = clientpool[request.user.username]
+    clientInstance[db].drop_collection(collection)
+    return redirect('showcollections', db=db)
+
+
+@login_required
+def _insertcollection(request, db):
+    return HttpResponse("Inserted Collection !!")
+
+
+@login_required
+def _deletedocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
     collections.find_one_and_delete({"_id": ObjectId(pk)})
@@ -102,7 +138,7 @@ def _delete(request, db, collection, pk):
 
 
 @login_required
-def _view(request, db, collection, pk):
+def _viewdocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
     jsontext = collections.find_one({"_id": ObjectId(pk)})
@@ -112,7 +148,9 @@ def _view(request, db, collection, pk):
 
 
 @login_required
-def _insert(request, db, collection, pk):
+def _insertdocument(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
-    collections.insert_one()
+
+    context = {"db": db, "collection": collection}
+    return render(request, "main/insert.html", context)

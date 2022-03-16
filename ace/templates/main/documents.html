@@ -20,24 +20,16 @@
     </span>
 </header>
 
-<!--
 <nav>
-<select name="databases" id="databases">
-  {% for dbname in dbs %}
-  <option value="{{dbname}}">{{dbname}}</option>
-  {% endfor %}
-</select>
-</nav>
--->
-<nav>
-    <p><b>
-            <h5><a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button></a>
-                
-                <button class="right"><b>Insert Document</b></button>
+    <p>
+        <b>
+        <h5>
+            <a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button>
+            </a>
+            <a href="{% url '_insertdocument' db=db collection=collection %}"><button class="right"><b>Insert Document</b></button></a>
         </h5>
         </b>
     </p>
-
 </nav>
 
 <table>
@@ -48,9 +40,9 @@
     </tr>
     {% for id, doc in tuplist %}
     <tr>
-        <td>{{doc}}</td>
+        <td>{{id}}</td>
         <td class="prime" id="view">
-            <a href="{% url '_view' db=db collection=collection pk=id %}"><button type="button" class="btn btn-success">
+            <a href="{% url '_viewdocument' db=db collection=collection pk=id %}"><button type="button" class="btn btn-success">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-eye-fill" viewBox="0 0 16 16">
                         <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
@@ -63,7 +55,7 @@
         </a>
         </td>
         <td class="prime">
-            <a href="{% url '_delete' db=db collection=collection pk=id %}" onclick="return confirm('Are you sure you want to delete this item?');">
+            <a href="{% url '_deletedocument' db=db collection=collection pk=id %}" onclick="return confirm('Are you sure you want to delete this item?');">
             <button type="button" class="btn btn-outline-danger">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-trash-fill" viewBox="0 0 16 16">
