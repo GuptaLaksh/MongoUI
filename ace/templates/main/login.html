@@ -18,7 +18,7 @@
         </header>
         <body class="text-center">
             <main class="form-signin">
-                <form method="POST" action="{{login}}"?next={{request.path}}>
+                <form method="POST" action="">
                     {% csrf_token %}
                     <img src="{% static 'images/microbots.png' %}" class='logo'>
                     <br>

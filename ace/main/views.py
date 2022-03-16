@@ -9,9 +9,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from utils.mongo import get_db_handle, clientpool, get_collection_instance
 from bson.objectid import ObjectId
-
+from bson.errors import InvalidId
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from main.forms import CollectionForm, DatabaseForm
 
 # Create Views
+
 
 @login_required
 def logout_request(request):
@@ -87,6 +91,7 @@ def showCollections(request, db):
 
     context = {
         "db": db, "tuplist": tuplist}
+
     return render(request, "main/pagecollection.html", context=context)
 
 
@@ -94,13 +99,14 @@ def showCollections(request, db):
 def showdocs(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
-    # print(collections.estimated_document_count())
+
     documents = collections.find({})
     tuplist = []
     for document in documents:
         tuplist.append((document['_id'], document))
+    context = {"db": db, "collection": collection, "tuplist": tuplist}
 
-    return render(request, "main/documents.html", context={"db": db, "collection": collection, "tuplist": tuplist})
+    return render(request, "main/documents.html", context=context)
 
 
 @login_required
@@ -113,19 +119,54 @@ def _deletedatabase(request, db):
 
 @login_required
 def _insertdatabase(request):
-    return HttpResponse("Inserted Database!!")
+    clientInstance = clientpool[request.user.username]
+
+    if request.method == 'POST':
+        form = DatabaseForm(request.POST)
+        if form.is_valid():
+
+            databaseName = form.cleaned_data.get('databaseName')
+            collectionName = form.cleaned_data.get('collectionName')
+            dictionary = form.cleaned_data.get('dictionary')
+
+            databaseName = clientInstance[databaseName]
+            collection = databaseName[collectionName]
+            collection.insert_one(dictionary)
+            print(type(dictionary))
+            print(dictionary)
+
+    else:
+        form = DatabaseForm()
+
+    context = {"form": form}
+    return render(request, "main/add_database.html", context)
 
 
 @login_required
 def _deletecollection(request, db, collection):
     clientInstance = clientpool[request.user.username]
-    clientInstance[db].drop_collection(collection)
+    datab = clientInstance[db].drop_collection(collection)
     return redirect('showcollections', db=db)
 
 
 @login_required
 def _insertcollection(request, db):
-    return HttpResponse("Inserted Collection !!")
+    clientInstance = clientpool[request.user.username]
+
+    if request.method == 'POST':
+        form = CollectionForm(request.POST or None)
+        if form.is_valid():
+            collectionName = form.cleaned_data.get('collectionName')
+            dictionary = form.cleaned_data.get('dictionary')
+            Mycol = clientInstance[db][collectionName]
+            Mycol.insert_one(dictionary)
+            print(dictionary)
+            print(collectionName)
+    else:
+        form = CollectionForm()
+
+    context = {"form": form, "db": db}
+    return render(request, "main/add_collection.html", context)
 
 
 @login_required
@@ -141,7 +182,13 @@ def _deletedocument(request, db, collection, pk):
 def _viewdocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
-    jsontext = collections.find_one({"_id": ObjectId(pk)})
+    try:
+        query = {"_id": ObjectId(pk)}
+    except InvalidId:
+        query = {"_id": (pk)}
+
+    jsontext = collections.find_one(query)
+
     print(jsontext)
     context = {"jsontext": jsontext, "db": db, "collection": collection}
     return render(request, "main/views.html", context)

@@ -31,13 +31,6 @@ SECRET_KEY = getenv("SECRET_KEY")
 LIVERELOAD_HOST = getenv("LIVERELOAD_HOST")
 LIVERELOAD_PORT = getenv("LIVERELOAD_PORT")
 
-JSON_EDITOR_JS = getenv("JSON_EDITOR_JS")
-JSON_EDITOR_CSS = getenv("JSON_EDITOR_CSS")
-
-JSON_EDITOR_INIT_JS = "jsoneditor-init.js"
-
-CODEMIRROR_PATH = 'codemirror'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -53,11 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'main.apps.MainAdminConfig',
     'livereload',
-    'main',
-    'jazzmin',
-    'jsoneditor',
+    'main'
 ]
 
 MIDDLEWARE = [
