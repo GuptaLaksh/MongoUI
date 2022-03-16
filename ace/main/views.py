@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from main.forms import CollectionForm, DatabaseForm
+from main.forms import CollectionForm, DatabaseForm, DocumentForm
 
 # Create Views
 
@@ -173,7 +173,12 @@ def _insertcollection(request, db):
 def _deletedocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
-    collections.find_one_and_delete({"_id": ObjectId(pk)})
+    try:
+        query = {"_id": ObjectId(pk)}
+    except InvalidId:
+        query = {"_id": (pk)}
+
+    collections.find_one_and_delete(query)
 
     return redirect('showdocs', db=db, collection=collection)
 
@@ -189,7 +194,6 @@ def _viewdocument(request, db, collection, pk):
 
     jsontext = collections.find_one(query)
 
-    print(jsontext)
     context = {"jsontext": jsontext, "db": db, "collection": collection}
     return render(request, "main/views.html", context)
 
@@ -199,5 +203,13 @@ def _insertdocument(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
 
-    context = {"db": db, "collection": collection}
+    if request.method == 'POST':
+        form = DocumentForm(request.POST or None)
+        if form.is_valid():
+            dictionary = form.cleaned_data.get('dictionary')
+            collections.insert_one(dictionary)
+    else:
+        form = DocumentForm()
+
+    context = {"db": db, "collection": collection, "form": form}
     return render(request, "main/insert.html", context)
