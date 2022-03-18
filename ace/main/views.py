@@ -13,6 +13,7 @@ from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from main.forms import CollectionForm, DatabaseForm, DocumentForm
+from django.urls import reverse_lazy
 
 # Create Views
 
@@ -132,8 +133,9 @@ def _insertdatabase(request):
             databaseName = clientInstance[databaseName]
             collection = databaseName[collectionName]
             collection.insert_one(dictionary)
-            print(type(dictionary))
             print(dictionary)
+
+            return HttpResponseRedirect('/')
 
     else:
         form = DatabaseForm()
@@ -156,12 +158,15 @@ def _insertcollection(request, db):
     if request.method == 'POST':
         form = CollectionForm(request.POST or None)
         if form.is_valid():
+
             collectionName = form.cleaned_data.get('collectionName')
             dictionary = form.cleaned_data.get('dictionary')
             Mycol = clientInstance[db][collectionName]
             Mycol.insert_one(dictionary)
             print(dictionary)
             print(collectionName)
+            url = reverse_lazy('showcollections', kwargs={'db': db})
+            return HttpResponseRedirect(url)
     else:
         form = CollectionForm()
 
@@ -208,6 +213,9 @@ def _insertdocument(request, db, collection):
         if form.is_valid():
             dictionary = form.cleaned_data.get('dictionary')
             collections.insert_one(dictionary)
+            url = reverse_lazy('showdocs', kwargs={
+                               'db': db, 'collection': collection})
+            return HttpResponseRedirect(url)
     else:
         form = DocumentForm()
 
