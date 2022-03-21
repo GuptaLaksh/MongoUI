@@ -45,6 +45,7 @@ body {
 
 .logo {
     width: 210px;
+    margin-bottom: 20px;
 }
 
 .headbox {
@@ -56,4 +57,9 @@ body {
 header {
     margin: auto;
     color: red;
+}
+
+.form-group {
+    margin: 5px;
+    margin-bottom: 10px;
 }

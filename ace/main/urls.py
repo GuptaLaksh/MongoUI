@@ -10,6 +10,7 @@ from main.views import (
     showdocs,
     _deletedocument,
     _viewdocument,
+    _editdocument,
     _insertdocument,
     _deletecollection,
     _insertcollection,
@@ -29,6 +30,8 @@ urlpatterns = [
          views._deletedocument, name='_deletedocument'),
     path('db/<db>/<collection>/<pk>/viewdocument',
          views._viewdocument, name='_viewdocument'),
+    path('db/<db>/<collection>/<pk>/editdocument',
+         views._editdocument, name='_editdocument'),
     path('db/<db>/<collection>/insertdocument',
          views._insertdocument, name='_insertdocument'),
     path('db/<db>/<collection>/deletecollection/',
@@ -39,6 +42,7 @@ urlpatterns = [
          views._deletedatabase, name='_deletedatabase'),
     path('db/insertdatabase/',
          views._insertdatabase, name='_insertdatabase'),
+
 
 
 ]

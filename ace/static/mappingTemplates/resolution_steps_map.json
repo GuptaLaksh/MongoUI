@@ -1,0 +1,15 @@
+{
+    key: '1',
+    name: 'template_name_in_awx',
+    t1: {
+        summary: 'Here put the resolution summary',
+        steps: 'Here put the resolution steps taken, separated by comma',
+        articles: 'Here put the reference article if any or NA'
+    },
+    t2: {
+        summary: 'Here put the resolution summary 2 i.e. no actions taken',
+        steps: 'Here put the resolution steps taken, separated by comma',
+        articles: 'Here put the reference article if any or NA'
+    },
+    customer_id: 'Default_Customer'
+}

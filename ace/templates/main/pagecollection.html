@@ -47,9 +47,9 @@ Collections
     <table>
       <tr>
         <th>Name_Collection</th>
-        <th>Frequency_Count</th>
-        <th class="prime">View_Collection</th>
-        <th class="prime">Delete_Collection</th>
+        <th>FrequencyCount</th>
+        <th class="prime">View</th>
+        <th class="prime">Delete</th>
       </tr>
       {% for dict in tuplist %}
       <tr>
@@ -67,14 +67,26 @@ Collections
               <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
               <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
             </svg>
-            <a href="{% url 'showdocs' db=db collection=dict.name %}" onclick='return ({{dict.count}}==0) ? alert("No docs! Create One") : confirm("Taking you to the docs Page!!");'>
+            <a href="{% url 'showdocs' db=db collection=dict.name %}">
             View
             </a>
           </button>
         </td>
         <td class="prime">
+          {% if db in primelist %}
           
-          <a href="{% url '_deletecollection' db=db collection=dict.name %}" onclick="return confirm('Are you sure you want to delete this Collection ?');">
+          <button type="button" class="btn btn-outline-danger" id="remove" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
+              viewBox="0 0 16 16">
+              <path
+                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+              </path>
+            </svg>
+            Delete
+          </button>
+  
+        {% else %}
+        <a href="{% url '_deletecollection' db=db collection=dict.name %}" onclick="return confirm('Are you sure you want to delete this Collection ?');">
           <button type="button" class="btn btn-outline-danger" id="remove">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
               viewBox="0 0 16 16">
@@ -85,7 +97,7 @@ Collections
             Delete
           </button>
         </a>
-  
+        {% endif %}
         </td>
       </tr>
       {% endfor %}

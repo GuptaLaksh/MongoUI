@@ -28,7 +28,10 @@
          <span class="glyphicon glyphicon-arrow-left"></span>
           Back
         </button></a>
-  
+        <a href=""><button type="submit" class="btn btn-success btn-large pull-right">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Save
+        </button></a>
     </div>
     <div id="mainpane">
         <form request="post" action="">
@@ -40,11 +43,15 @@
     </div>
     <div>
     
+        <input type="hidden" name="_method" value="put">
         <a href="{% url 'showdocs' db=db collection=collection %}" ><button class="backButton btn btn-warning btn-large">
             <span class="glyphicon glyphicon-arrow-left"></span>
              Back
            </button></a>
-           
+           <a href=""><button type="submit" class="btn btn-success btn-large pull-right">
+             <span class="glyphicon glyphicon-pencil"></span>
+             Save
+           </button></a>
     </div>
 
     <script>

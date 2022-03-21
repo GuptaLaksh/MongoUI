@@ -14,6 +14,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from main.forms import CollectionForm, DatabaseForm, DocumentForm
 from django.urls import reverse_lazy
+import json
 
 # Create Views
 
@@ -75,7 +76,10 @@ def login_request(request):
 @login_required
 def showdbs(request):
     clientInstance = clientpool[request.user.username]
-    return render(request, "main/home.html", context={"dbs": clientInstance.list_databases()})
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+    context = {"dbs": clientInstance.list_databases(), "primelist": primelist}
+    return render(request, "main/home.html", context=context)
 
 
 @login_required
@@ -83,6 +87,8 @@ def showCollections(request, db):
     clientInstance = clientpool[request.user.username]
     collectionlist = []
     tuplist = []
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     for collection in clientInstance[db].list_collection_names():
         collectionlist.append((collection, clientInstance[db][collection]))
 
@@ -91,7 +97,7 @@ def showCollections(request, db):
             dict({'name': collection, 'count': instance.estimated_document_count()}))
 
     context = {
-        "db": db, "tuplist": tuplist}
+        "db": db, "tuplist": tuplist, "primelist": primelist}
 
     return render(request, "main/pagecollection.html", context=context)
 
@@ -100,12 +106,14 @@ def showCollections(request, db):
 def showdocs(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
-
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     documents = collections.find({})
     tuplist = []
     for document in documents:
         tuplist.append((document['_id'], document))
-    context = {"db": db, "collection": collection, "tuplist": tuplist}
+    context = {"db": db, "collection": collection,
+               "tuplist": tuplist, "primelist": primelist}
 
     return render(request, "main/documents.html", context=context)
 
@@ -121,9 +129,9 @@ def _deletedatabase(request, db):
 @login_required
 def _insertdatabase(request):
     clientInstance = clientpool[request.user.username]
-
+    form = DatabaseForm(request.POST or None)
     if request.method == 'POST':
-        form = DatabaseForm(request.POST)
+
         if form.is_valid():
 
             databaseName = form.cleaned_data.get('databaseName')
@@ -136,9 +144,6 @@ def _insertdatabase(request):
             print(dictionary)
 
             return HttpResponseRedirect('/')
-
-    else:
-        form = DatabaseForm()
 
     context = {"form": form}
     return render(request, "main/add_database.html", context)
@@ -155,8 +160,9 @@ def _deletecollection(request, db, collection):
 def _insertcollection(request, db):
     clientInstance = clientpool[request.user.username]
 
+    form = CollectionForm(request.POST or None)
     if request.method == 'POST':
-        form = CollectionForm(request.POST or None)
+
         if form.is_valid():
 
             collectionName = form.cleaned_data.get('collectionName')
@@ -167,8 +173,6 @@ def _insertcollection(request, db):
             print(collectionName)
             url = reverse_lazy('showcollections', kwargs={'db': db})
             return HttpResponseRedirect(url)
-    else:
-        form = CollectionForm()
 
     context = {"form": form, "db": db}
     return render(request, "main/add_collection.html", context)
@@ -192,6 +196,7 @@ def _deletedocument(request, db, collection, pk):
 def _viewdocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
+
     try:
         query = {"_id": ObjectId(pk)}
     except InvalidId:
@@ -199,7 +204,41 @@ def _viewdocument(request, db, collection, pk):
 
     jsontext = collections.find_one(query)
 
-    context = {"jsontext": jsontext, "db": db, "collection": collection}
+    '''
+    data = {}
+
+    if collection == "devicename_inventory_map":
+        with open('/home/itpauser/donkeyUI/ace/mongoMapTemplates/devicename_inventory_map.json', 'r') as f:
+            data = json.load(f)
+    
+    elseif collection == "devicename_inventory_map":
+        with open('/home/itpauser/donkeyUI/ace/mongoMapTemplates/devicename_inventory_map.json', 'r') as f:
+            data = json.load(f)
+
+    elseif collection == "devicename_inventory_map":
+        with open('/home/itpauser/donkeyUI/ace/mongoMapTemplates/devicename_inventory_map.json', 'r') as f:
+            data = json.load(f)
+
+    form = DocumentForm(request.POST or None, initial = data)
+    if request.method == 'POST':
+
+        if form.is_valid():
+
+            dictionary = form.cleaned_data.get('dictionary')
+            collections.find_one_and_replace(query, dictionary)
+            url = reverse_lazy('showdocs', kwargs={
+                               'db': db, 'collection': collection})
+
+            return HttpResponseRedirect(url)
+
+    context = {"jsontext": jsontext, "db": db,
+               "collection": collection, "form": form}
+    return render(request, "main/insert.html", context)
+
+'''
+
+    context = {"jsontext": jsontext, "db": db,
+               "collection": collection}
     return render(request, "main/views.html", context)
 
 
@@ -208,16 +247,46 @@ def _insertdocument(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
 
+    data = {}
+
+    url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/' + collection + '.json'
+    print(url)
+    json_data = open(url)
+    data = json.load(json_data)
+
+    print(data)
+    form = DocumentForm(request.POST or None, initial=data)
+
     if request.method == 'POST':
-        form = DocumentForm(request.POST or None)
+
         if form.is_valid():
+
             dictionary = form.cleaned_data.get('dictionary')
             collections.insert_one(dictionary)
             url = reverse_lazy('showdocs', kwargs={
                                'db': db, 'collection': collection})
             return HttpResponseRedirect(url)
-    else:
-        form = DocumentForm()
 
     context = {"db": db, "collection": collection, "form": form}
     return render(request, "main/insert.html", context)
+
+
+@login_required
+def _editdocument(request, db, collection, pk):
+    clientInstance = clientpool[request.user.username]
+    collections = get_collection_instance(clientInstance, db, collection)
+
+    try:
+        query = {"_id": ObjectId(pk)}
+    except InvalidId:
+        query = {"_id": (pk)}
+
+    jsontext = collections.find_one(query)
+    jsontext.pop("_id")
+
+    form = DocumentForm(request.POST or None, initial=jsontext)
+    print(form)
+
+    context = {"jsontext": jsontext, "db": db,
+               "collection": collection}
+    return render(request, "main/edit.html", context)

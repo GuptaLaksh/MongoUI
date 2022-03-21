@@ -39,7 +39,7 @@
             <div>
                 <b>
                 <h5>
-                    <a href="{% url '_insertdatabase' %}"><button class="right"><b>Add_Database</b></button></a>
+                    <a href="{% url '_insertdatabase' %}"><button class="right"><b>AddDatabase</b></button></a>
                 </h5>
                 </b>
             </div>
@@ -51,10 +51,10 @@
         <tr>
             <th>Databases</th>
         </tr>
-        <th>Name_Database</th>
-        <th class="prime">Size_Database</th>
-        <th class="prime">View_Database</th>
-        <th class="prime">Delete_Database</th>
+        <th>Name</th>
+        <th class="prime">Size</th>
+        <th class="prime">View</th>
+        <th class="prime">Delete</th>
     </tr>
     {% for dbname in dbs %}
         <tr>
@@ -75,8 +75,9 @@
                 </button>
               </td>
             <td class="prime">
-                <a href="{% url '_deletedatabase' db=dbname.name %}" onclick="return confirm('Are you sure you want to delete this Database Permanently ?');">
-                <button type="button" class="btn btn-outline-danger">
+                {% if dbname.name in primelist %}
+                
+                <button type="button" class="btn btn-outline-danger" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg"
                          width="16"
                          height="16"
@@ -89,7 +90,24 @@
                     
                     Delete
                 
-                </button></a>
+                </button>
+                {% else %}
+                <a href="{% url '_deletedatabase' db=dbname.name %}" onclick="return confirm('Are you sure you want to delete this Database Permanently ?');">
+                    <button type="button" class="btn btn-outline-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="16"
+                             height="16"
+                             fill="currentColor"
+                             class="bi bi-trash-fill"
+                             viewBox="0 0 16 16">
+                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                            </path>
+                        </svg>
+                        
+                        Delete
+                    
+                    </button></a>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}
