@@ -110,8 +110,11 @@ def showdocs(request, db, collection):
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     documents = collections.find({})
     tuplist = []
+    newlist = {}
     for document in documents:
         tuplist.append((document['_id'], document))
+
+   
     context = {"db": db, "collection": collection,
                "tuplist": tuplist, "primelist": primelist}
 
