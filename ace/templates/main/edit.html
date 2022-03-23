@@ -12,7 +12,7 @@
 
     
     <link rel="stylesheet" href="{% static 'main/views.css' %}">
-    <title>Document</title>
+    <title>Edit</title>
 </head>
 
 
@@ -22,37 +22,29 @@
     <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
 </header>
 <body>
-    <div>
-        <input type="hidden" name="_method" value="put">
+    
         <a href="{% url 'showdocs' db=db collection=collection %}" ><button class="backButton btn btn-warning btn-large">
          <span class="glyphicon glyphicon-arrow-left"></span>
           Back
         </button></a>
-        <a href=""><button type="submit" class="btn btn-success btn-large pull-right">
-          <span class="glyphicon glyphicon-pencil"></span>
-          Save
-        </button></a>
-    </div>
-    <div id="mainpane">
-        <form request="post" action="">
-            
-          <b><h3><textarea readonly id="editor" rows="10" cols="107">{{jsontext}}</textarea></h3></b>
-          
-      </form>
-      <button onclick="prettyPrint()">Pretty Print</button>
-    </div>
-    <div>
     
-        <input type="hidden" name="_method" value="put">
-        <a href="{% url 'showdocs' db=db collection=collection %}" ><button class="backButton btn btn-warning btn-large">
-            <span class="glyphicon glyphicon-arrow-left"></span>
-             Back
-           </button></a>
-           <a href=""><button type="submit" class="btn btn-success btn-large pull-right">
-             <span class="glyphicon glyphicon-pencil"></span>
-             Save
-           </button></a>
+    <form method="post" action="">
+      {% csrf_token %}
+      
+      <div>
+        <input type="submit" value="Submit" class="btn btn-success btn-large pull-right">
+      </div>
+      
+
+      <div class="form-group">
+          <b><h3>{{ form.dictionary }}</h3></b>
+      </div>
+
+      <div>
+        <input type="submit" value="Submit" class="btn btn-success btn-large pull-right" >
     </div>
+  </form>
+
 
     <script>
       function prettyPrint() {
