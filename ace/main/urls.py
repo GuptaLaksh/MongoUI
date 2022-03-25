@@ -3,6 +3,7 @@ from django.urls import path
 
 
 from main.views import (
+    # mongologin_request,
     showdbs,
     login_request,
     logout_request,
@@ -14,9 +15,10 @@ from main.views import (
     _insertdocument,
     _deletecollection,
     _insertcollection,
+    _renamecollection,
     _deletedatabase,
-    _insertdatabase
-
+    _insertdatabase,
+    _renamedatabase
 )
 
 urlpatterns = [
@@ -38,8 +40,12 @@ urlpatterns = [
          views._deletecollection, name='_deletecollection'),
     path('db/<db>/insertcollection/',
          views._insertcollection, name='_insertcollection'),
+    path('db/<db>/<collection>/renamecollection/',
+         views._renamecollection, name='_renamecollection'),
     path('db/<db>/deletedatabase/',
          views._deletedatabase, name='_deletedatabase'),
+    path('db/<db>/renamedatabase/',
+         views._renamedatabase, name='_renamedatabase'),
     path('db/insertdatabase/',
          views._insertdatabase, name='_insertdatabase'),
 

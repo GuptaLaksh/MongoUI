@@ -1,0 +1,10 @@
+{
+    "customer_id" :"",
+    "hostname" :"",
+    "ip_address" : "",
+    "os" : "",
+    "hostgroup" :"",
+    "status" : "",
+    "inventory_id" : "",
+    "description" : ""
+}

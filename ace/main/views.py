@@ -15,7 +15,7 @@ from django.shortcuts import render
 from main.forms import CollectionForm, DatabaseForm, DocumentForm
 from django.urls import reverse_lazy
 import json
-
+from ast import literal_eval
 # Create Views
 
 
@@ -33,10 +33,48 @@ def logout_request(request):
     return redirect('login')
 
 
+"""
 def login_request(request):
     form = AuthenticationForm(request=request, data=request.POST)
 
     print(clientpool)
+    if request.user.is_authenticated:
+        return redirect('/')
+
+    if request.method == 'POST':
+
+        form = AuthenticationForm(request=request, data=request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            if not User.objects.filter(username=username).exists():
+                User.objects.create_user(
+                    username=username, password=password)
+
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(
+                    request, f"You are now logged in as {username}")
+                return redirect('/')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    else:
+        messages.error(request, "Invalid username or password.")
+
+    context = {"form": form}
+
+    return render(request, 'login.html', context=context)
+"""
+
+
+def login_request(request):
+    form = AuthenticationForm(request=request, data=request.POST)
+
     if request.user.is_authenticated:
         return redirect('/')
 
@@ -114,9 +152,19 @@ def showdocs(request, db, collection):
     for document in documents:
         tuplist.append((document['_id'], document))
 
-   
+    print(type(tuplist))
+    print(tuplist)
+
+    keylist = []
+    for id, doc in tuplist:
+        for key in doc:
+            if key not in keylist:
+                keylist.append(key)
+
+    # id, tuplist(all_keys, all_values)
+
     context = {"db": db, "collection": collection,
-               "tuplist": tuplist, "primelist": primelist}
+               "tuplist": tuplist, "primelist": primelist, "keylist": keylist}
 
     return render(request, "main/documents.html", context=context)
 
@@ -132,7 +180,17 @@ def _deletedatabase(request, db):
 @login_required
 def _insertdatabase(request):
     clientInstance = clientpool[request.user.username]
-    form = DatabaseForm(request.POST or None)
+
+    data = {}
+
+    url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
+
+    json_data = open(url)
+    data = json.loads(json_data.read())
+
+    form = DatabaseForm(request.POST or None, initial={
+        "dictionary": (json.dumps(data, indent=4))})
+
     if request.method == 'POST':
 
         if form.is_valid():
@@ -140,7 +198,7 @@ def _insertdatabase(request):
             databaseName = form.cleaned_data.get('databaseName')
             collectionName = form.cleaned_data.get('collectionName')
             dictionary = form.cleaned_data.get('dictionary')
-
+            dictionary = literal_eval(dictionary)
             databaseName = clientInstance[databaseName]
             collection = databaseName[collectionName]
             collection.insert_one(dictionary)
@@ -149,7 +207,20 @@ def _insertdatabase(request):
             return HttpResponseRedirect('/')
 
     context = {"form": form}
-    return render(request, "main/add_database.html", context)
+    return render(request, "side/add_database.html", context)
+
+
+@login_required
+def _renamedatabase(request, db):
+    clientInstance = clientpool[request.user.username]
+
+    if request.method == 'POST':
+        newname = request.POST.get["newname"]
+        print(newname)
+        clientInstance.admin.command('copydb',
+                                     fromdb=db,
+                                     todb=newname)
+    return redirect('showdbs')
 
 
 @login_required
@@ -162,14 +233,23 @@ def _deletecollection(request, db, collection):
 @login_required
 def _insertcollection(request, db):
     clientInstance = clientpool[request.user.username]
+    data = {}
 
-    form = CollectionForm(request.POST or None)
+    url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
+
+    json_data = open(url)
+    data = json.loads(json_data.read())
+
+    form = CollectionForm(request.POST or None, initial={
+        "dictionary": (json.dumps(data, indent=4))})
+
     if request.method == 'POST':
 
         if form.is_valid():
 
             collectionName = form.cleaned_data.get('collectionName')
             dictionary = form.cleaned_data.get('dictionary')
+            dictionary = literal_eval(dictionary)
             Mycol = clientInstance[db][collectionName]
             Mycol.insert_one(dictionary)
             print(dictionary)
@@ -178,7 +258,20 @@ def _insertcollection(request, db):
             return HttpResponseRedirect(url)
 
     context = {"form": form, "db": db}
-    return render(request, "main/add_collection.html", context)
+    return render(request, "side/add_collection.html", context)
+
+
+@login_required
+def _renamecollection(request, db, collection):
+    clientInstance = clientpool[request.user.username]
+
+    if request.method == 'POST':
+        newname = request.POST.get["newname"]
+
+        print(newname)
+        clientInstance[db][collection].rename(newname)
+
+    return redirect('showcollections', db=db)
 
 
 @login_required
@@ -207,42 +300,25 @@ def _viewdocument(request, db, collection, pk):
 
     jsontext = collections.find_one(query)
 
-    '''
-    data = {}
+    jsontext.pop("_id")
 
-    if collection == "devicename_inventory_map":
-        with open('/home/itpauser/donkeyUI/ace/mongoMapTemplates/devicename_inventory_map.json', 'r') as f:
-            data = json.load(f)
-    
-    elseif collection == "devicename_inventory_map":
-        with open('/home/itpauser/donkeyUI/ace/mongoMapTemplates/devicename_inventory_map.json', 'r') as f:
-            data = json.load(f)
+    jsontext = json.dumps(jsontext, indent=4)
 
-    elseif collection == "devicename_inventory_map":
-        with open('/home/itpauser/donkeyUI/ace/mongoMapTemplates/devicename_inventory_map.json', 'r') as f:
-            data = json.load(f)
+    try:
+        ObjectId(pk)
+        newvar = '{"_id": ObjectId(' + (pk) + '),'
+    except InvalidId:
+        newvar = '{"_id":' + (pk) + ','
 
-    form = DocumentForm(request.POST or None, initial = data)
-    if request.method == 'POST':
+    jsontext = newvar + jsontext[1:]
 
-        if form.is_valid():
+    if jsontext is None:
+        query = {"_id": int(pk)}
+        jsontext = collections.find_one(query)
 
-            dictionary = form.cleaned_data.get('dictionary')
-            collections.find_one_and_replace(query, dictionary)
-            url = reverse_lazy('showdocs', kwargs={
-                               'db': db, 'collection': collection})
-
-            return HttpResponseRedirect(url)
-
-    context = {"jsontext": jsontext, "db": db,
-               "collection": collection, "form": form}
-    return render(request, "main/insert.html", context)
-
-'''
-
-    context = {"jsontext": jsontext, "db": db,
-               "collection": collection}
-    return render(request, "main/views.html", context)
+    context = {"query": query, "jsontext": jsontext, "db": db,
+               "collection": collection, "pk": pk}
+    return render(request, "side/views.html", context)
 
 
 @login_required
@@ -253,25 +329,30 @@ def _insertdocument(request, db, collection):
     data = {}
 
     url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/' + collection + '.json'
-    print(url)
-    json_data = open(url)
-    data = json.load(json_data)
 
-    print(data)
-    form = DocumentForm(request.POST or None, initial=data)
+    try:
+        json_data = open(url)
+    except FileNotFoundError:
+        url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
+        json_data = open(url)
 
+    data = json.loads(json_data.read())
+    form = DocumentForm(request.POST or None, initial={
+                        "dictionary": (json.dumps(data, indent=4))})
+
+    #form = DocumentForm(request.POST or None)
     if request.method == 'POST':
 
         if form.is_valid():
 
             dictionary = form.cleaned_data.get('dictionary')
-            collections.insert_one(dictionary)
+            collections.insert_one(literal_eval(dictionary))
             url = reverse_lazy('showdocs', kwargs={
                                'db': db, 'collection': collection})
             return HttpResponseRedirect(url)
 
     context = {"db": db, "collection": collection, "form": form}
-    return render(request, "main/insert.html", context)
+    return render(request, "side/insert.html", context)
 
 
 @login_required
@@ -285,11 +366,33 @@ def _editdocument(request, db, collection, pk):
         query = {"_id": (pk)}
 
     jsontext = collections.find_one(query)
-    jsontext.pop("_id")
 
-    form = DocumentForm(request.POST or None, initial=jsontext)
-    print(form)
+    if jsontext.get("_id") is not None:
+        jsontext.pop("_id")
+
+    form = DocumentForm(request.POST or None, initial={
+                        "dictionary": json.dumps(jsontext, indent=4)})
+
+    #form = DocumentForm(request.POST or None)
+
+    if request.method == 'POST':
+
+        if form.is_valid():
+
+            dictionary = form.cleaned_data.get('dictionary')
+
+            dictionary = literal_eval((dictionary))
+
+            try:
+                idnew = ObjectId(pk)
+            except InvalidId:
+                idnew = (pk)
+            dictionary["_id"] = idnew
+            collections.find_one_and_replace(jsontext, dictionary)
+
+            #url = reverse_lazy('showdocs', kwargs={'db': db, 'collection': collection})
+            # return HttpResponseRedirect(url)
 
     context = {"jsontext": jsontext, "db": db,
-               "collection": collection}
-    return render(request, "main/edit.html", context)
+               "collection": collection, "form": form, "pk": pk}
+    return render(request, "side/edit.html", context)

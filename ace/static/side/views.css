@@ -9,3 +9,12 @@ body {
     width: 210px;
     margin-bottom: 20px;
 }
+
+.greetings {
+    float: right;
+    margin: auto;
+}
+
+#editor {
+    cursor: default;
+}

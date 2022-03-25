@@ -1,16 +1,17 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Collections{% endblock %}
+{% extends 'base.html' %} {% load static %} {% block title %}Documents{% endblock %}
 
 
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
 
-<head>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-</head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 {% block css %}
+
 <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
 
-<link rel="stylesheet" type="text/css" href="{% static 'main/doc.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'side/doc.css' %}">
+
 {% endblock %} {% block content %}
 <!--
  {% block script %}
@@ -18,110 +19,112 @@
 
  {% endblock script %}
 -->
+<div class="container">
+    <header>
+        <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
 
-<header>
-    <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
 
+        <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark">
+                    <h5>Log Out</h5>
+                </button></a></span>
+        <span class="greetings">
+            <h5 class="username">Hi <b>{{ user.username }}</b>!</h5>
+        </span>
+    </header>
+    <hr>
+    <nav>
+        <p>
+            <b>
+                <h5>
+                    <a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button>
+                    </a>
+                    <a href="{% url '_insertdocument' db=db collection=collection %}"><button class="right"><b>Insert
+                                Document</b></button></a>
+                </h5>
+            </b>
+        </p>
+    </nav>
+</div>
+<div class="container">
+    <ul id="tabs" class="nav nav-pills nav-justified" data-tabs="tabs">
+        <li class="active"><a href="#simple" data-toggle="tab"><span class="glyphicon glyphicon-tag"></span> Simple</a>
+        </li>
+        <li><a href="#advanced" data-toggle="tab"><span class="glyphicon glyphicon-tags"></span> Advanced</a></li>
+    </ul>
+</div>
+<div class="container">
 
-    <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark">
-                <h5>Log Out</h5>
-            </button></a></span>
-    <span class="greetings">
-        <h5 class="username">Hi <b>{{ user.username }}</b>!</h5>
-    </span>
-</header>
-
-<nav>
-    <p>
-        <b>
-            <h5>
-                <a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button>
-                </a>
-                <a href="{% url '_insertdocument' db=db collection=collection %}"><button class="right"><b>Insert
-                            Document</b></button></a>
-            </h5>
-        </b>
-    </p>
-</nav>
-
-<div>
-<table>
-    <thead>
-    
-    {% for id, doc in tuplist %}
-    <tr>
-        
-        {% if forloop.first %}
-            <th>View</th>
-            <th>Edit</th>
-            <th>Delete</th>
-            {% for key in doc.keys %}
-            <th scope='col'>{{key}}</th>
+    <table>
+        <thead>
+            <tr>
+                <th>View</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            {% for key in keylist %}
+                <th scope='col'>{{key}}</th>
             {% endfor %}
-        {%endif%}
-    </tr>
-    {% endfor %}
-</thead>
-<tbody>
-    {% for id, doc in tuplist %}
-    <tr>
-        <td class="prime" id="view" class="headcol">
-            <a href="{% url '_viewdocument' db=db collection=collection pk=id %}"><button type="button"
-                    class="btn btn-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-eye-fill" viewBox="0 0 16 16">
-                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
-                        <path
-                            d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
-                        </path>
-                    </svg>
-                    
-                </button>
-            </a>
-        </td>
-        <td class="prime ">
-            <a href="{% url '_editdocument' db=db collection=collection pk=id %}"><button type="button"
-                    class="btn btn-info">
-                    <svg width="25px" height="25px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-                        <!-- Font Awesome Pro 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) -->
-                        <path
-                            d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" />
-                        </svg>
-                    
-                </button>
-            </a>
-        </td>
-        <td class="prime ">
-            {% if db in primelist %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for id, doc in tuplist %}
+            <tr>
+                <td class="prime headcol" id="view">
+                    <a href="{% url '_viewdocument' db=db collection=collection pk=id %}"><button type="button"
+                            class="btn btn-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                                <path
+                                    d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                                </path>
+                            </svg>
 
-            <button type="button" class="btn btn-outline-danger" disabled>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-trash-fill" viewBox="0 0 16 16">
-                    <path
-                        d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-                    </path>
-                </svg></button>
+                        </button>
+                    </a>
+                </td>
+                <td class="prime headcol1">
+                    <a href="{% url '_editdocument' db=db collection=collection pk=id %}"><button type="button"
+                        class="btn btn-info">
+                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                    
+                            <path
+                                d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" />
+                            </svg>
+                    </button>
+                    </a>
+                </td>
+                {% if db in primelist %}
+                <td class="prime">
+                    <button type="button" class="btn btn-outline-danger" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-trash-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                            </path>
+                        </svg></button>
+                </td>
+                {% else %}
+                <td class="prime headcol2">
+                    <a href="{% url '_deletedocument' db=db collection=collection pk=id %} "
+                        onclick="return confirm('Are you sure you want to delete this document ?');">
+                        <button type="button" class="btn btn-outline-danger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                                </path>
+                            </svg></button>
+                    </a>
+                </td>
+                {% endif %}
 
-            {% else %}
-            <a href="{% url '_deletedocument' db=db collection=collection pk=id %} "
-                onclick="return confirm('Are you sure you want to delete this document ?');">
-                <button type="button" class="btn btn-outline-danger">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-trash-fill" viewBox="0 0 16 16">
-                        <path
-                            d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-                        </path>
-                    </svg></button>
-            </a>
-            {% endif %}
-			</td>
-        {% for val in doc.values %}        
-        <td>{{val}}</td>
-        {% endfor %}  
-    </tr>
-    {% endfor %}
-</tbody>
-</table>
+                {% for val in doc.values %}
+                <td>{{val}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 

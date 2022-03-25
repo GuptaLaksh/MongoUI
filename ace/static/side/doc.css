@@ -1,0 +1,54 @@
+div {
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: visible;
+    padding: 0;
+}
+
+.headcol {
+    position: sticky;
+    left: 0;
+    width: 5em;
+    top: auto;
+    border-top-width: 1px;
+    /*only relevant for first row*/
+    margin-top: -1px;
+    /*compensate for top border*/
+}
+
+.headcol1 {
+    position: sticky;
+    left: 60;
+    width: 5em;
+    top: auto;
+    border-top-width: 1px;
+    /*only relevant for first row*/
+    margin-top: -1px;
+    /*compensate for top border*/
+}
+
+.headcol2 {
+    position: sticky;
+    left: 120;
+    width: 5em;
+    top: auto;
+    border-top-width: 1px;
+    /*only relevant for first row*/
+    margin-top: -1px;
+    /*compensate for top border*/
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th {
+    white-space: nowrap;
+}
+
+td,
+tr {
+    white-space: nowrap;
+    background-color: rgba(255, 255, 255, 0.87);
+}

@@ -9,6 +9,7 @@ Collections
 
 
 {% block content %}
+<div class="container">
   {% if user.is_authenticated %}
     <header>
       <a href="{% url 'showdbs' %}">
@@ -25,6 +26,7 @@ Collections
         </h5>
       </span>
     </header>
+    <hr>
     <!--
     <nav>
     <select name="databases" id="databases">
@@ -50,6 +52,7 @@ Collections
         <th>FrequencyCount</th>
         <th class="prime">View</th>
         <th class="prime">Delete</th>
+        <th class="prime">Rename</th>
       </tr>
       {% for dict in tuplist %}
       <tr>
@@ -60,21 +63,21 @@ Collections
         <td>
           {{ dict.count }}
         </td>
+        
         <td class="prime">
+          <a href="{% url 'showdocs' db=db collection=dict.name %}">
           <button type="button" class="btn btn-success">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill"
               viewBox="0 0 16 16">
               <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
               <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
             </svg>
-            <a href="{% url 'showdocs' db=db collection=dict.name %}">
-            View
-            </a>
-          </button>
+            
+            
+          </button></a>
         </td>
+        {% if db in primelist %}
         <td class="prime">
-          {% if db in primelist %}
-          
           <button type="button" class="btn btn-outline-danger" id="remove" disabled>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
               viewBox="0 0 16 16">
@@ -82,10 +85,10 @@ Collections
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
               </path>
             </svg>
-            Delete
           </button>
-  
+        </td>
         {% else %}
+        <td class="prime">
         <a href="{% url '_deletecollection' db=db collection=dict.name %}" onclick="return confirm('Are you sure you want to delete this Collection ?');">
           <button type="button" class="btn btn-outline-danger" id="remove">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
@@ -94,11 +97,35 @@ Collections
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
               </path>
             </svg>
-            Delete
           </button>
         </a>
-        {% endif %}
         </td>
+        {% endif %}
+        {% if db in primelist %}
+        <td class="prime">
+          <form action="" method="post">
+            {% csrf_token %}
+            <input type="input" placeholder="Rename..." name="newname" disabled size="8">
+          <button type="button" class="btn btn-warning" disabled>
+            <svg height="18px" width="18px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M373.5 27.11C388.5 9.885 410.2 0 433 0C476.6 0 512 35.36 512 78.98C512 101.8 502.1 123.5 484.9 138.5L277.7 319L192.1 234.3L373.5 27.11zM255.1 341.7L235.9 425.1C231.9 442.2 218.9 455.8 202 460.5L24.35 510.3L119.7 414.9C122.4 415.6 125.1 416 128 416C145.7 416 160 401.7 160 384C160 366.3 145.7 352 128 352C110.3 352 96 366.3 96 384C96 386.9 96.38 389.6 97.08 392.3L1.724 487.6L51.47 309.1C56.21 293.1 69.8 280.1 86.9 276.1L170.3 256.9L255.1 341.7z"/></svg>
+          </button>
+        </form>
+        </td>
+        {% else %}
+
+        <td class="prime">
+          <form action="" method="post">
+            <input type="input" placeholder="Rename..." name="newname" size="8">
+            <a href="{% url '_renamecollection' db=db collection=dict.name %}">
+          <button type="button" class="btn btn-warning">
+            <svg height="18px" width="18px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M373.5 27.11C388.5 9.885 410.2 0 433 0C476.6 0 512 35.36 512 78.98C512 101.8 502.1 123.5 484.9 138.5L277.7 319L192.1 234.3L373.5 27.11zM255.1 341.7L235.9 425.1C231.9 442.2 218.9 455.8 202 460.5L24.35 510.3L119.7 414.9C122.4 415.6 125.1 416 128 416C145.7 416 160 401.7 160 384C160 366.3 145.7 352 128 352C110.3 352 96 366.3 96 384C96 386.9 96.38 389.6 97.08 392.3L1.724 487.6L51.47 309.1C56.21 293.1 69.8 280.1 86.9 276.1L170.3 256.9L255.1 341.7z"/></svg>
+            
+           
+          </button>
+        </a>
+        </form>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
       <!--
@@ -118,4 +145,5 @@ Collections
       <h4>Log In</h4>
   </a>
   {% endif %}
+</div>
 {% endblock %}
