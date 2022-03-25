@@ -359,7 +359,8 @@ def _insertdocument(request, db, collection):
 def _editdocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
-
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     try:
         query = {"_id": ObjectId(pk)}
     except InvalidId:
@@ -394,5 +395,5 @@ def _editdocument(request, db, collection, pk):
             # return HttpResponseRedirect(url)
 
     context = {"jsontext": jsontext, "db": db,
-               "collection": collection, "form": form, "pk": pk}
+               "collection": collection, "form": form, "pk": pk, "primelist": primelist}
     return render(request, "side/edit.html", context)

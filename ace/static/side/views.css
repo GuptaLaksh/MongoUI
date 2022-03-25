@@ -18,3 +18,11 @@ body {
 #editor {
     cursor: default;
 }
+
+textarea {
+    color: white;
+    background-color: #04071c;
+    caret-color: orangered;
+    overflow: auto;
+    border: solid 15px grey;
+}

@@ -41,18 +41,18 @@ Collections
             <a href="{% url 'showdbs' %}">
               <button>{{db}}</button>
             </a>
-            <a href="{% url '_insertcollection' db=db %}"><button class="right"><b>Add_Collection</b></button>
+            <a href="{% url '_insertcollection' db=db %}"><button class="right"><b>Add Collection</b></button>
           </h5>
         </b>
       </p>
     </nav>
     <table>
       <tr>
-        <th>Name_Collection</th>
-        <th>FrequencyCount</th>
+        <th>Name Collection</th>
+        <th>Document Count</th>
         <th class="prime">View</th>
         <th class="prime">Delete</th>
-        <th class="prime">Rename</th>
+       
       </tr>
       {% for dict in tuplist %}
       <tr>
@@ -101,33 +101,10 @@ Collections
         </a>
         </td>
         {% endif %}
-        {% if db in primelist %}
-        <td class="prime">
-          <form action="" method="post">
-            {% csrf_token %}
-            <input type="input" placeholder="Rename..." name="newname" disabled size="8">
-          <button type="button" class="btn btn-warning" disabled>
-            <svg height="18px" width="18px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M373.5 27.11C388.5 9.885 410.2 0 433 0C476.6 0 512 35.36 512 78.98C512 101.8 502.1 123.5 484.9 138.5L277.7 319L192.1 234.3L373.5 27.11zM255.1 341.7L235.9 425.1C231.9 442.2 218.9 455.8 202 460.5L24.35 510.3L119.7 414.9C122.4 415.6 125.1 416 128 416C145.7 416 160 401.7 160 384C160 366.3 145.7 352 128 352C110.3 352 96 366.3 96 384C96 386.9 96.38 389.6 97.08 392.3L1.724 487.6L51.47 309.1C56.21 293.1 69.8 280.1 86.9 276.1L170.3 256.9L255.1 341.7z"/></svg>
-          </button>
-        </form>
-        </td>
-        {% else %}
-
-        <td class="prime">
-          <form action="" method="post">
-            <input type="input" placeholder="Rename..." name="newname" size="8">
-            <a href="{% url '_renamecollection' db=db collection=dict.name %}">
-          <button type="button" class="btn btn-warning">
-            <svg height="18px" width="18px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M373.5 27.11C388.5 9.885 410.2 0 433 0C476.6 0 512 35.36 512 78.98C512 101.8 502.1 123.5 484.9 138.5L277.7 319L192.1 234.3L373.5 27.11zM255.1 341.7L235.9 425.1C231.9 442.2 218.9 455.8 202 460.5L24.35 510.3L119.7 414.9C122.4 415.6 125.1 416 128 416C145.7 416 160 401.7 160 384C160 366.3 145.7 352 128 352C110.3 352 96 366.3 96 384C96 386.9 96.38 389.6 97.08 392.3L1.724 487.6L51.47 309.1C56.21 293.1 69.8 280.1 86.9 276.1L170.3 256.9L255.1 341.7z"/></svg>
-            
-           
-          </button>
-        </a>
-        </form>
-        </td>
-        {% endif %}
       </tr>
       {% endfor %}
+
+      
       <!--
       {% for dbname in dbs %}
       <tr>
@@ -137,6 +114,25 @@ Collections
       {% endfor %}
       -->
     </table>
+    {% if db in primelist %}
+      <div class="container">
+              <input type="input" placeholder="{{db}}" name="newname" size="22" disabled>
+            <button type="button" class="btn btn-warning" disabled>
+                <svg width="16" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3L188.5 453.4L154.6 419.5L158.1 416H112C103.2 416 96 408.8 96 400V353.9L92.51 357.4C87.78 362.2 84.31 368 82.42 374.4L59.44 452.6L137.6 429.6C143.1 427.7 149.8 424.2 154.6 419.5L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3zM492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75z"/></svg>            </button>
+          
+          {% else %}
+        
+            <form action="" method="post">
+                {% csrf_token %}
+              <input type="input" placeholder="{{db}}" name="newname" size="22">
+              <a href="{% url '_renamedatabase' db=db %}">
+            <button type="button" class="btn btn-warning">
+                <svg width="16" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3L188.5 453.4L154.6 419.5L158.1 416H112C103.2 416 96 408.8 96 400V353.9L92.51 357.4C87.78 362.2 84.31 368 82.42 374.4L59.44 452.6L137.6 429.6C143.1 427.7 149.8 424.2 154.6 419.5L188.5 453.4C178.1 463.8 165.2 471.5 151.1 475.6L30.77 511C22.35 513.5 13.24 511.2 7.03 504.1C.8198 498.8-1.502 489.7 .976 481.2L36.37 360.9C40.53 346.8 48.16 333.9 58.57 323.5L291.7 90.34L421.7 220.3zM492.7 58.75C517.7 83.74 517.7 124.3 492.7 149.3L444.3 197.7L314.3 67.72L362.7 19.32C387.7-5.678 428.3-5.678 453.3 19.32L492.7 58.75z"/></svg>              
+              </a>
+            </button>
+          </form>
+        </div>
+          {% endif %}
   {% else %}
     <p>
       You are not logged in

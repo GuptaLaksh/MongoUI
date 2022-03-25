@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'side/views.css' %}">
  
 
-    <title>ADD_NEW</title>
+    <title>Add Database</title>
 
 </head>
 
@@ -47,30 +47,28 @@
         <form method="post" action="">
             {% csrf_token %}
             <hr>
-            <h2>ADD_DATABASE</h2>
+            <h2>ADD DATABASE</h2>
             <div class="form-group">
-                DATABASE_NAME : {{ form.databaseName }}
+                DATABASE_NAME :   {{ form.databaseName }}
             </div>
             <div class="form-group">
                 COLLECTION_NAME : {{ form.collectionName }}
             </div>
             <div class="form-group">
-                <b><h3>{{ form.dictionary }}</h3></b>
+                <h4>{{ form.dictionary }}</h4>
             </div>
 
 
 
             <div class="form-group">
 
-                <input type="submit" value="Submit" class="btn btn-success btn-large pull-right">
+                <input type="submit" value="Insert" class="btn btn-primary btn-large pull-right">
 
             </div>
 
         </form>
         <hr>
-        <a href="{% url 'showdbs' %}"><button class="backButton btn btn-warning btn-large pull-left">
-                <svg width="18px" height="18px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Pro 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
-                Back</button></a>
+        
     </div>
 
 
