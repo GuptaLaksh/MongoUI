@@ -22,5 +22,4 @@ from main.admin import main_site
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
-    path('mainadmin/', main_site.urls)
 ]

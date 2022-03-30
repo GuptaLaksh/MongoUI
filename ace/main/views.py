@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -12,12 +11,12 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from main.forms import CollectionForm, DatabaseForm, DocumentForm
+from main.forms import CollectionForm, DatabaseForm, DocumentForm, SimpleQueryForm, AdvanceQueryForm
 from django.urls import reverse_lazy
 import json
 from os import getenv
 import pandas
-# Create Views
+import collections
 
 
 @login_required
@@ -73,6 +72,20 @@ def login_request(request):
 """
 
 
+def uilogin_request(request):
+    return render(request, "main/uilogin.html")
+
+
+def uilogout_request(request):
+
+    return redirect('uilogin')
+
+
+def uihome_request(request):
+
+    return render(request, "uihome.html")
+
+
 def login_request(request):
     form = AuthenticationForm(request=request, data=request.POST)
 
@@ -118,7 +131,7 @@ def showdbs(request):
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     context = {"dbs": clientInstance.list_databases(), "primelist": primelist}
-    return render(request, "main/home.html", context=context)
+    return render(request, "main/database.html", context=context)
 
 
 @login_required
@@ -148,24 +161,48 @@ def showdocs(request, db, collection):
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     documents = collections.find({})
+
     tuplist = []
-    newlist = {}
+
     for document in documents:
         tuplist.append((document['_id'], document))
 
-    # print(type(tuplist))
-    # print(tuplist)
+    #print("tuplist:", tuplist)
+
+    doclist = []
+    for id, doc in tuplist:
+        doclist.append(doc)
+    print("doclist:", doclist)
 
     keylist = []
-    for id, doc in tuplist:
-        for key in doc:
+
+    for doc in doclist:
+        for key in doc.keys():
             if key not in keylist:
                 keylist.append(key)
 
-    # id, tuplist(all_keys, all_values)
+    keylist.sort()
+    #print("keylist:", keylist)
+
+    for key in keylist:
+        for doc in doclist:
+            if key not in doc:
+                doc[key] = ""
+
+    doclistnew = []
+    for doc in doclist:
+        doc1 = sorted(doc.items())
+        doclistnew.append(dict(doc1))
+
+    tuplistnew = []
+    for doc in doclistnew:
+        tuplistnew.append((doc["_id"], doc))
+
+    #print("doclist:", doclist)
+    #print("doclistnew:", doclistnew)
 
     context = {"db": db, "collection": collection,
-               "tuplist": tuplist, "primelist": primelist, "keylist": keylist}
+               "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew}
 
     return render(request, "main/documents.html", context=context)
 
@@ -328,6 +365,29 @@ def _insertcollection(request, db):
 
     context = {"form": form, "db": db, "e": e}
     return render(request, "side/add_collection.html", context)
+
+
+@login_required
+def _simplequery(request, db, collection):
+    clientInstance = clientpool[request.user.username]
+    collections = get_collection_instance(clientInstance, db, collection)
+
+    form = SimpleQueryForm(request.POST or None)
+
+    if request.method == 'POST':
+
+        if form.is_valid():
+
+            key = form.cleaned_data.get('key')
+            value = form.cleaned_data.get('value')
+
+    context = {"form": form}
+
+
+@login_required
+def _advancedquery(request, db, collection):
+    clientInstance = clientpool[request.user.username]
+    collections = get_collection_instance(clientInstance, db, collection)
 
 
 @login_required

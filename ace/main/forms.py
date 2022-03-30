@@ -5,18 +5,20 @@ class DatabaseForm(forms.Form):
     databaseName = forms.CharField(label='DatabaseName', max_length=100)
     collectionName = forms.CharField(label='CollectionName', max_length=100)
     dictionary = forms.CharField(
-        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}),required=False)
+        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}), required=False)
     myfile = forms.FileField(label='myfile', required=False)
+
 
 class CollectionForm(forms.Form):
     collectionName = forms.CharField(label='CollectionName', max_length=100)
     dictionary = forms.CharField(
-        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}),required=False)
+        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}), required=False)
     myfile = forms.FileField(label='myfile', required=False)
+
 
 class DocumentForm(forms.Form):
     dictionary = forms.CharField(
-        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}),required=False
+        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}), required=False
     )
     myfile = forms.FileField(label='myfile', required=False)
 
@@ -29,10 +31,10 @@ class RenameForm(forms.Form):
 
 class SimpleQueryForm(forms.Form):
     key = forms.CharField(
-        label='key', widget=forms.Textarea(attrs={"rows": 10, "cols": 10, "wrap": "hard"})
+        label='key', widget=forms.Textarea(attrs={"rows": 10, "cols": 10, "wrap": "hard", "placeholder": "key"})
     )
     value = forms.CharField(
-        label='value', widget=forms.Textarea(attrs={"rows": 10, "cols": 10, "wrap": "hard"})
+        label='value', widget=forms.Textarea(attrs={"rows": 10, "cols": 10, "wrap": "hard", "placeholder": "value"})
     )
 
 
