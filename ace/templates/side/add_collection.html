@@ -18,7 +18,7 @@
 
 <body>
     <div class="container">
-        <header ">
+        <header>
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
         
         
@@ -39,30 +39,47 @@
                 </div>
 
         <hr>
-        <form method="post" action="">
+    
+     
+        <form enctype="multipart/form-data" method="post" action="">
 
             {% csrf_token %}
 
             <h2>ADD_COLLECTION</h2>
-            
+            <hr>
 
 
             <div class="form-group">
                 COLLECTION_NAME : {{ form.collectionName }}
             </div>
+
             <div class="form-group">
-                <b><h3>{{ form.dictionary }}</h3></b>
+                {{ form.myfile }}
+            </div>
+
+            <hr>
+            {% if e is not None %}
+            <div style="color:black;">
+                <i> <b> {{e}} </b> </i>
+            </div>
+            {% endif %}
+            <hr>
+
+            <div class="form-group">
+                <b><h4>{{ form.dictionary }}</h4></b>
             </div>
 
 
 
             <div class="form-group">
-                <input type="submit" value="Insert" class="btn btn-primary btn-large pull-right">
+                <input type="submit" name="action" value="Validate" class="btn btn-danger btn-large pull-right">
+                <input type="submit" name="action" value="Insert" class="btn btn-primary btn-large pull-right">
             </div>
+            <hr>
 
 
         </form>
-<hr>
+
     
     </div>
 

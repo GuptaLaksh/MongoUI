@@ -15,7 +15,8 @@ from django.shortcuts import render
 from main.forms import CollectionForm, DatabaseForm, DocumentForm
 from django.urls import reverse_lazy
 import json
-from ast import literal_eval
+from os import getenv
+import pandas
 # Create Views
 
 
@@ -152,8 +153,8 @@ def showdocs(request, db, collection):
     for document in documents:
         tuplist.append((document['_id'], document))
 
-    print(type(tuplist))
-    print(tuplist)
+    # print(type(tuplist))
+    # print(tuplist)
 
     keylist = []
     for id, doc in tuplist:
@@ -180,7 +181,7 @@ def _deletedatabase(request, db):
 @login_required
 def _insertdatabase(request):
     clientInstance = clientpool[request.user.username]
-
+    e = None
     data = {}
 
     url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
@@ -193,20 +194,53 @@ def _insertdatabase(request):
 
     if request.method == 'POST':
 
-        if form.is_valid():
+        if request.POST["action"] == 'Validate':
 
-            databaseName = form.cleaned_data.get('databaseName')
-            collectionName = form.cleaned_data.get('collectionName')
-            dictionary = form.cleaned_data.get('dictionary')
-            dictionary = literal_eval(dictionary)
-            databaseName = clientInstance[databaseName]
-            collection = databaseName[collectionName]
-            collection.insert_one(dictionary)
-            print(dictionary)
+            if form.is_valid():
 
-            return HttpResponseRedirect('/')
+                databaseName = form.cleaned_data.get('databaseName')
+                collectionName = form.cleaned_data.get('collectionName')
+                dictionary = form.cleaned_data.get('dictionary')
+                databaseName = clientInstance[databaseName]
+                collection = databaseName[collectionName]
 
-    context = {"form": form}
+                try:
+                    json.loads(dictionary)
+                    e = "Validated, Go ahead and Insert this Document :)"
+                except ValueError as ex:
+                    e = ex
+
+        if request.POST["action"] == 'Insert':
+
+            if form.is_valid():
+
+                databaseName = form.cleaned_data.get('databaseName')
+                collectionName = form.cleaned_data.get('collectionName')
+                dictionary = form.cleaned_data.get('dictionary')
+
+                databaseName = clientInstance[databaseName]
+                collection = databaseName[collectionName]
+
+                if 'myfile' in request.FILES:
+                    myfile = request.FILES['myfile']
+                    contentfile = json.load(myfile)
+                    try:
+                        collection.insert_one(contentfile)
+                    except:
+                        collection.insert_many(contentfile)
+
+                    url = reverse_lazy('showdbs')
+                    return HttpResponseRedirect(url)
+                elif dictionary != "":
+                    try:
+                        json.loads(dictionary)
+                        collection.insert_one(json.loads(dictionary))
+                        url = reverse_lazy('showdbs')
+                        return HttpResponseRedirect(url)
+                    except ValueError as ex:
+                        e = ex
+
+    context = {"form": form, "e": e}
     return render(request, "side/add_database.html", context)
 
 
@@ -215,11 +249,15 @@ def _renamedatabase(request, db):
     clientInstance = clientpool[request.user.username]
 
     if request.method == 'POST':
-        newname = request.POST.get["newname"]
+
+        newname = request.POST.get('newname')
         print(newname)
+
         clientInstance.admin.command('copydb',
                                      fromdb=db,
-                                     todb=newname)
+                                     todb=newname,
+                                     fromhost=getenv("MONGO_HOST"))
+
     return redirect('showdbs')
 
 
@@ -234,6 +272,7 @@ def _deletecollection(request, db, collection):
 def _insertcollection(request, db):
     clientInstance = clientpool[request.user.username]
     data = {}
+    e = None
 
     url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
 
@@ -244,20 +283,50 @@ def _insertcollection(request, db):
         "dictionary": (json.dumps(data, indent=4))})
 
     if request.method == 'POST':
+        if request.POST["action"] == 'Validate':
 
-        if form.is_valid():
+            if form.is_valid():
 
-            collectionName = form.cleaned_data.get('collectionName')
-            dictionary = form.cleaned_data.get('dictionary')
-            dictionary = literal_eval(dictionary)
-            Mycol = clientInstance[db][collectionName]
-            Mycol.insert_one(dictionary)
-            print(dictionary)
-            print(collectionName)
-            url = reverse_lazy('showcollections', kwargs={'db': db})
-            return HttpResponseRedirect(url)
+                collectionName = form.cleaned_data.get('collectionName')
+                dictionary = form.cleaned_data.get('dictionary')
 
-    context = {"form": form, "db": db}
+                Mycol = clientInstance[db][collectionName]
+
+                try:
+                    json.loads(dictionary)
+                    e = "Validated, Go ahead and Insert this Document :)"
+                except ValueError as ex:
+                    e = ex
+
+        if request.POST["action"] == 'Insert':
+
+            if form.is_valid():
+                collectionName = form.cleaned_data.get('collectionName')
+                dictionary = form.cleaned_data.get('dictionary')
+
+                Mycol = clientInstance[db][collectionName]
+
+                if 'myfile' in request.FILES:
+                    myfile = request.FILES['myfile']
+                    contentfile = json.load(myfile)
+                    try:
+                        Mycol.insert_one(contentfile)
+                    except:
+                        Mycol.insert_many(contentfile)
+
+                    url = reverse_lazy('showcollections', kwargs={'db': db})
+                    return HttpResponseRedirect(url)
+                elif dictionary != "":
+                    try:
+                        json.loads(dictionary)
+                        Mycol.insert_one(json.loads(dictionary))
+                        url = reverse_lazy(
+                            'showcollections', kwargs={'db': db})
+                        return HttpResponseRedirect(url)
+                    except ValueError as ex:
+                        e = ex
+
+    context = {"form": form, "db": db, "e": e}
     return render(request, "side/add_collection.html", context)
 
 
@@ -268,7 +337,7 @@ def _renamecollection(request, db, collection):
     if request.method == 'POST':
         newname = request.POST.get["newname"]
 
-        print(newname)
+        # print(newname)
         clientInstance[db][collection].rename(newname)
 
     return redirect('showcollections', db=db)
@@ -326,6 +395,7 @@ def _insertdocument(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
 
+    e = None
     data = {}
 
     url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/' + collection + '.json'
@@ -340,18 +410,90 @@ def _insertdocument(request, db, collection):
     form = DocumentForm(request.POST or None, initial={
                         "dictionary": (json.dumps(data, indent=4))})
 
+    if request.method == 'POST':
+
+        if request.POST["action"] == 'Validate':
+
+            if form.is_valid():
+
+                dictionary = form.cleaned_data.get('dictionary')
+                try:
+                    json.loads(dictionary)
+                    e = "Validated, Go ahead and Insert this Document :)"
+                except ValueError as ex:
+                    e = ex
+
+        if request.POST["action"] == 'Insert':
+
+            if form.is_valid():
+
+                dictionary = form.cleaned_data.get('dictionary')
+                if 'myfile' in request.FILES:
+                    myfile = request.FILES['myfile']
+                    contentfile = json.load(myfile)
+                    collections.insert_one(contentfile)
+                    url = reverse_lazy('showdocs', kwargs={
+                        'db': db, 'collection': collection})
+                    return HttpResponseRedirect(url)
+                elif dictionary != "":
+                    try:
+                        json.loads(dictionary)
+                        collections.insert_one(json.loads(dictionary))
+                        url = reverse_lazy('showdocs', kwargs={
+                            'db': db, 'collection': collection})
+                        return HttpResponseRedirect(url)
+                    except ValueError as ex:
+                        e = ex
+
+    context = {"db": db, "collection": collection, "form": form, "e": e}
+    return render(request, "side/insert.html", context)
+
+
+@login_required
+def _insertdocumentBulk(request, db, collection):
+    clientInstance = clientpool[request.user.username]
+    collections = get_collection_instance(clientInstance, db, collection)
+
+    e = "Validated, Go ahead and Insert this Document :)"
+    form = DocumentForm(request.POST or None, request.FILES or None)
+
     #form = DocumentForm(request.POST or None)
     if request.method == 'POST':
 
-        if form.is_valid():
+        if request.POST["action"] == 'Validate':
 
-            dictionary = form.cleaned_data.get('dictionary')
-            collections.insert_one(literal_eval(dictionary))
-            url = reverse_lazy('showdocs', kwargs={
-                               'db': db, 'collection': collection})
-            return HttpResponseRedirect(url)
+            if form.is_valid():
 
-    context = {"db": db, "collection": collection, "form": form}
+                dictionary = form.cleaned_data.get('dictionary')
+                try:
+                    json.loads(dictionary)
+                except ValueError as ex:
+                    e = ex
+
+        if request.POST["action"] == 'Insert':
+
+            if form.is_valid():
+
+                dictionary = form.cleaned_data.get('dictionary')
+
+                if 'myfile' in request.FILES:
+                    myfile = request.FILES['myfile']
+                    contentfile = json.load(myfile)
+                    collections.insert_many(contentfile)
+                    url = reverse_lazy('showdocs', kwargs={
+                        'db': db, 'collection': collection})
+                    return HttpResponseRedirect(url)
+                elif dictionary != "":
+                    try:
+                        json.loads(dictionary)
+                        collections.insert_many(json.loads(dictionary))
+                        url = reverse_lazy('showdocs', kwargs={
+                            'db': db, 'collection': collection})
+                        return HttpResponseRedirect(url)
+                    except ValueError as ex:
+                        e = ex
+
+    context = {"db": db, "collection": collection, "form": form, "e": e}
     return render(request, "side/insert.html", context)
 
 
@@ -359,6 +501,8 @@ def _insertdocument(request, db, collection):
 def _editdocument(request, db, collection, pk):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
+
+    e = None
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
     try:
@@ -377,23 +521,32 @@ def _editdocument(request, db, collection, pk):
     #form = DocumentForm(request.POST or None)
 
     if request.method == 'POST':
+        if request.POST["action"] == 'Validate':
 
-        if form.is_valid():
+            if form.is_valid():
 
-            dictionary = form.cleaned_data.get('dictionary')
+                dictionary = form.cleaned_data.get('dictionary')
+                try:
+                    json.loads(dictionary)
+                    e = "Validated, Go ahead and Save this Document :)"
+                except ValueError as ex:
+                    e = ex
 
-            dictionary = literal_eval((dictionary))
+        if request.POST["action"] == 'Save':
 
-            try:
-                idnew = ObjectId(pk)
-            except InvalidId:
-                idnew = (pk)
-            dictionary["_id"] = idnew
-            collections.find_one_and_replace(jsontext, dictionary)
+            if form.is_valid():
 
-            #url = reverse_lazy('showdocs', kwargs={'db': db, 'collection': collection})
-            # return HttpResponseRedirect(url)
+                dictionary = form.cleaned_data.get('dictionary')
+                try:
+                    json.loads(dictionary)
+                    dictionary = json.loads(dictionary)
+                    collections.find_one_and_replace(query, dictionary)
+                    url = reverse_lazy('showdocs', kwargs={
+                        'db': db, 'collection': collection})
+                    return HttpResponseRedirect(url)
+                except ValueError as ex:
+                    e = ex
 
     context = {"jsontext": jsontext, "db": db,
-               "collection": collection, "form": form, "pk": pk, "primelist": primelist}
+               "collection": collection, "form": form, "pk": pk, "primelist": primelist, "e": e}
     return render(request, "side/edit.html", context)

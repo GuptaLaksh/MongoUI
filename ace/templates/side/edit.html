@@ -78,6 +78,14 @@
             {% endif %}
 
       <hr>
+      {% if e is not None %}
+        <div style="color:black;">
+            <i> <b> {{e}} </b> </i>
+        </div>
+        {% endif %}
+
+        <hr>
+    
       <form method="post" action="">
         {% csrf_token %}
 
@@ -88,7 +96,10 @@
         </div>
 
 
-        <input type="submit" value="Save" class="btn btn-primary btn-large pull-right">
+        <div class="form-group">
+          <input type="submit" name="action" value="Validate" class="btn btn-danger btn-large pull-right">
+          <input type="submit" name="action" value="Save" class="btn btn-primary btn-large pull-right">
+      </div>
 
       </form>
       <hr>
