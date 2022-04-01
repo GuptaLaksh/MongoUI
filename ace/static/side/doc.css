@@ -53,58 +53,6 @@ tr {
     background-color: rgba(255, 255, 255, 0.87);
 }
 
-.nav-fill .nav-item .nav-link,
-.nav-justified .nav-item .nav-link {
-    width: 100%;
-    height: 50px;
-    vertical-align: center;
-}
-
-.nav>li>a:focus,
-.nav>li>a:hover {
-    text-decoration: none;
-    background-color: #eee;
-}
-
-.nav-pills .nav-link {
-    background: 0 0;
-    border: 0;
-    border-radius: 0.25rem;
-}
-
-.well {
-    min-height: 20px;
-    margin-bottom: 20px;
-    background-color: rgb(245, 245, 245);
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 1px inset;
-    padding: 19px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb(227, 227, 227);
-    border-image: initial;
-    border-radius: 4px;
-}
-
-.well {
-    background-image: linear-gradient(rgb(232, 232, 232) 0px, rgb(245, 245, 245) 100%);
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 3px inset, rgba(255, 255, 255, 0.1) 0px 1px 0px;
-    background-repeat: repeat-x;
-    border-color: rgb(220, 220, 220);
-}
-
-.well {
-    min-height: 20px;
-    margin-bottom: 20px;
-    background-color: rgb(245, 245, 245);
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 1px inset;
-    padding: 19px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb(227, 227, 227);
-    border-image: initial;
-    border-radius: 4px;
-}
-
 form {
     display: block;
     margin-top: 0em;
@@ -112,9 +60,4 @@ form {
 
 .tab-pane>form {
     padding-bottom: 5px;
-}
-
-textarea {
-    color: white;
-    background-color: blueviolet;
 }

@@ -29,19 +29,33 @@ class RenameForm(forms.Form):
     )
 
 
+FORMATS = [
+    ('json', 'json'), ('csv', 'csv')
+]
+
+
+class ExportForm(forms.Form):
+    name = forms.CharField(
+        label='name', widget=forms.Textarea(attrs={"rows": 1, "cols": 10, "wrap": "hard"})
+    )
+    options = forms.CharField(label='Which Format?',
+                              widget=forms.Select(choices=FORMATS))
+    
+
+
 class SimpleQueryForm(forms.Form):
     key = forms.CharField(
-        label='key', widget=forms.Textarea(attrs={"rows": 10, "cols": 10, "wrap": "hard", "placeholder": "key"})
+        label='key', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "key"})
     )
     value = forms.CharField(
-        label='value', widget=forms.Textarea(attrs={"rows": 10, "cols": 10, "wrap": "hard", "placeholder": "value"})
+        label='value', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "value"})
     )
 
 
 class AdvanceQueryForm(forms.Form):
-    Query = forms.CharField(
-        label='Query', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"})
+    query = forms.CharField(
+        label='query', widget=forms.Textarea(attrs={"rows": 4, "cols": 50, "wrap": "hard", "placeholder": "query"})
     )
-    Projection = forms.CharField(
-        label='Projection', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"})
+    projection = forms.CharField(
+        label='projection', widget=forms.Textarea(attrs={"rows": 4, "cols": 50, "wrap": "hard", "placeholder": "projection"}), required=False
     )

@@ -11,12 +11,10 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from main.forms import CollectionForm, DatabaseForm, DocumentForm, SimpleQueryForm, AdvanceQueryForm
+from main.forms import CollectionForm, DatabaseForm, DocumentForm, SimpleQueryForm, AdvanceQueryForm, ExportForm
 from django.urls import reverse_lazy
 import json
 from os import getenv
-import pandas
-import collections
 
 
 @login_required
@@ -160,7 +158,47 @@ def showdocs(request, db, collection):
     collections = get_collection_instance(clientInstance, db, collection)
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
+    form1 = SimpleQueryForm(request.POST or None)
+    form2 = AdvanceQueryForm(request.POST or None)
+
     documents = collections.find({})
+    query = None
+
+    print(request.POST)
+
+    if request.method == 'POST':
+
+        if 'simpleFind' in request.POST:
+
+            if form1.is_valid():
+
+                key = form1.cleaned_data.get('key')
+                value = form1.cleaned_data.get('value')
+
+            if key != "" and value != "":
+                query = '{"' + key + '":"' + value + '"}'
+                documents = collections.find(json.loads(query))
+            # print(query)
+        elif 'advanceFind' in request.POST:
+
+            documents = collections.find({})
+
+            if form2.is_valid():
+
+                query = form2.cleaned_data.get('query')
+                projection = form2.cleaned_data.get('projection')
+
+                if query != "" and projection == "":
+                    val = "" + query + ""
+                    print(val)
+                    documents = collections.find(json.loads(val))
+                elif query != "" and projection != "":
+                    documents = collections.find(
+                        json.loads(query), json.loads(projection))
+
+        elif 'clear' in request.POST:
+            documents = collections.find({})
 
     tuplist = []
 
@@ -172,7 +210,7 @@ def showdocs(request, db, collection):
     doclist = []
     for id, doc in tuplist:
         doclist.append(doc)
-    print("doclist:", doclist)
+    #print("doclist:", doclist)
 
     keylist = []
 
@@ -198,10 +236,23 @@ def showdocs(request, db, collection):
     for doc in doclistnew:
         tuplistnew.append((doc["_id"], doc))
 
+    form3 = ExportForm(request.POST or None)
+
+    if request.method == 'POST':
+
+        if 'export' in request.POST:
+            if form3.is_valid():
+
+                name = form3.cleaned_data.get('name')
+                formatoptions = form3.cleaned_data.get('options')
+                print(formatoptions)
+
+                mongo_docs = doclistnew
+
     #print("doclist:", doclist)
     #print("doclistnew:", doclistnew)
 
-    context = {"db": db, "collection": collection,
+    context = {"form1": form1, "form2": form2, "form3": form3, "db": db, "collection": collection,
                "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew}
 
     return render(request, "main/documents.html", context=context)
