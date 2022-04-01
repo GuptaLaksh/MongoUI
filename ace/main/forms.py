@@ -35,27 +35,21 @@ FORMATS = [
 
 
 class ExportForm(forms.Form):
-    name = forms.CharField(
-        label='name', widget=forms.Textarea(attrs={"rows": 1, "cols": 10, "wrap": "hard"})
-    )
     options = forms.CharField(label='Which Format?',
                               widget=forms.Select(choices=FORMATS))
-    
 
 
-class SimpleQueryForm(forms.Form):
+class QueryForm(forms.Form):
     key = forms.CharField(
-        label='key', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "key"})
+        label='key', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "key"}),  required=False
     )
     value = forms.CharField(
-        label='value', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "value"})
+        label='value', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "value"}),  required=False
     )
-
-
-class AdvanceQueryForm(forms.Form):
     query = forms.CharField(
-        label='query', widget=forms.Textarea(attrs={"rows": 4, "cols": 50, "wrap": "hard", "placeholder": "query"})
+        label='query', widget=forms.Textarea(attrs={"rows": 4, "cols": 50, "wrap": "hard", "placeholder": "query"}), required=False
     )
     projection = forms.CharField(
         label='projection', widget=forms.Textarea(attrs={"rows": 4, "cols": 50, "wrap": "hard", "placeholder": "projection"}), required=False
     )
+

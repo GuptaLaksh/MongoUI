@@ -65,56 +65,39 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
-  $(document).ready(function () {
-    $("#myTab li:eq(0) a").tab("show"); // show second tab (0-indexed, like an array)
+  $(function () {
+    $('.always').change(function () {                
+       $('#advance').toggle(this.checked);
+    }).change(); //ensure visible state matches initially
   });
 </script>
 
 
 <div class="container" style="overflow: hidden;">
-  
-  <ul class="nav nav-tabs" id="myTab">
-    <li class="active nav-item">
-      <a href="#simple" class="nav-link" data-bs-toggle="tab">Simple</a>
-    </li>
-    <li class="nav-item">
-      <a href="#advanced" class="nav-link" data-bs-toggle="tab">Advanced</a>
-    </li>
-  </ul>
-  <div class="tab-content" style="overflow: hidden;">
-    <div class="tab-pane fade" id="simple" style="overflow: hidden;">
-      <form action="" method="post">
-        {% csrf_token %}
-        {{form1.key}} {{form1.value}} 
-        <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"/></svg>
-          <input type="hidden" name="simpleFind" value="Find" style="height:30px;">Find</button>
-      </form>
-    </div>
-    <div class="tab-pane fade" id="advanced" style="overflow: hidden;" >
-      <form action="" method="post">
-        {% csrf_token %}
-        {{  form2.query  }} {{  form2.projection  }} 
-        <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"/></svg>
-          <input type="hidden" name="advanceFind" class"btn btn-primary" style="height:60px;">Find </button>
-        
-      </form>
-      
-    </div>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{form.key}}{{form.value}}
+    Advance <input type="checkbox" class="always" />
+    <span id="advance">
+        {{form.query}}{{form.projection}}
+    </span>
+    <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"/></svg>
+      <input type="hidden" name="Find" class"btn btn-primary" style="height:60px;">Find </button>
+    <button href="{% url 'showdocs' db=db collection=collection%}" class="pull-right" ><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M576 384C576 419.3 547.3 448 512 448H205.3C188.3 448 172 441.3 160 429.3L9.372 278.6C3.371 272.6 0 264.5 0 256C0 247.5 3.372 239.4 9.372 233.4L160 82.75C172 70.74 188.3 64 205.3 64H512C547.3 64 576 92.65 576 128V384zM271 208.1L318.1 256L271 303C261.7 312.4 261.7 327.6 271 336.1C280.4 346.3 295.6 346.3 304.1 336.1L352 289.9L399 336.1C408.4 346.3 423.6 346.3 432.1 336.1C442.3 327.6 442.3 312.4 432.1 303L385.9 256L432.1 208.1C442.3 199.6 442.3 184.4 432.1 175C423.6 165.7 408.4 165.7 399 175L352 222.1L304.1 175C295.6 165.7 280.4 165.7 271 175C261.7 184.4 261.7 199.6 271 208.1V208.1z"/></svg>
+      <input type="hidden" name="clear" >ClearFilter</button>
+  </form>
     
-      
-  </div>
   <div style="overflow: hidden;">
   <form action="" method="post">
     {% csrf_token %}
+    <div style="overflow:hidden"  >
     
-    <button class="pull-right" ><input type="hidden" name="clear" >ClearFilter</button>
-    <div style="overflow:hidden;">
-      <fieldset>
-        <legend>Export</legend>
-    <label>Name:</label>{{form3.name}}{{form3.options}}
-  </fieldset>
+      <span style:"float:right;">
+        {{exportform.options}}
+  
     <button><svg width=15 height=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M192 312C192 298.8 202.8 288 216 288H384V160H256c-17.67 0-32-14.33-32-32L224 0H48C21.49 0 0 21.49 0 48v416C0 490.5 21.49 512 48 512h288c26.51 0 48-21.49 48-48v-128H216C202.8 336 192 325.3 192 312zM256 0v128h128L256 0zM568.1 295l-80-80c-9.375-9.375-24.56-9.375-33.94 0s-9.375 24.56 0 33.94L494.1 288H384v48h110.1l-39.03 39.03C450.3 379.7 448 385.8 448 392s2.344 12.28 7.031 16.97c9.375 9.375 24.56 9.375 33.94 0l80-80C578.3 319.6 578.3 304.4 568.1 295z"/></svg>
       <input type="hidden" name="export" >Export All Queried Docs</button>
+    </span>
     </div>
   </form>
 </div>
@@ -137,6 +120,7 @@
       </tr>
     </thead>
     <tbody>
+    
       {% for id, doc in tuplist %}
       <tr>
         <td class="prime headcol" id="view">

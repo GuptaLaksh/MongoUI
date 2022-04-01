@@ -3,8 +3,6 @@ from django.urls import path
 
 
 from main.views import (
-    uilogin_request,
-    uihome_request,
     login_request,
 
     showdbs,
@@ -26,13 +24,11 @@ from main.views import (
     _insertdocumentBulk,
 
     logout_request,
-    uilogout_request
+
 )
 
 urlpatterns = [
 
-    path('uilogin/', views.uilogin_request, name="uilogin"),
-    path('ui/', views.uihome_request, name="uihome"),
 
     path('login/', views.login_request, name="login"),
 
@@ -68,6 +64,6 @@ urlpatterns = [
 
     path('logout/', views.logout_request, name='logout'),
 
-    path('uilogout/', views.uilogout_request, name='uilogout')
+
 
 ]

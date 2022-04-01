@@ -11,10 +11,12 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from main.forms import CollectionForm, DatabaseForm, DocumentForm, SimpleQueryForm, AdvanceQueryForm, ExportForm
+from main.forms import CollectionForm, DatabaseForm, DocumentForm, QueryForm, ExportForm
 from django.urls import reverse_lazy
-import json
+from datetime import date
 from os import getenv
+import json
+import csv
 
 
 @login_required
@@ -29,59 +31,6 @@ def logout_request(request):
         messages.error(request, "You are not logged in")
 
     return redirect('login')
-
-
-"""
-def login_request(request):
-    form = AuthenticationForm(request=request, data=request.POST)
-
-    print(clientpool)
-    if request.user.is_authenticated:
-        return redirect('/')
-
-    if request.method == 'POST':
-
-        form = AuthenticationForm(request=request, data=request.POST)
-
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            if not User.objects.filter(username=username).exists():
-                User.objects.create_user(
-                    username=username, password=password)
-
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.info(
-                    request, f"You are now logged in as {username}")
-                return redirect('/')
-            else:
-                messages.error(request, "Invalid username or password.")
-        else:
-            messages.error(request, "Invalid username or password.")
-
-    else:
-        messages.error(request, "Invalid username or password.")
-
-    context = {"form": form}
-
-    return render(request, 'login.html', context=context)
-"""
-
-
-def uilogin_request(request):
-    return render(request, "main/uilogin.html")
-
-
-def uilogout_request(request):
-
-    return redirect('uilogin')
-
-
-def uihome_request(request):
-
-    return render(request, "uihome.html")
 
 
 def login_request(request):
@@ -111,7 +60,7 @@ def login_request(request):
                     login(request, user)
                     messages.info(
                         request, f"You are now logged in as {username}")
-                    return redirect('/')
+                    return redirect('showdbs')
                 else:
                     messages.error(request, "Invalid username or password.")
             else:
@@ -155,50 +104,37 @@ def showCollections(request, db):
 @login_required
 def showdocs(request, db, collection):
     clientInstance = clientpool[request.user.username]
+    print(request.GET)
     collections = get_collection_instance(clientInstance, db, collection)
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
 
-    form1 = SimpleQueryForm(request.POST or None)
-    form2 = AdvanceQueryForm(request.POST or None)
-
     documents = collections.find({})
     query = None
 
+    form = QueryForm(request.POST or None)
     print(request.POST)
 
     if request.method == 'POST':
 
-        if 'simpleFind' in request.POST:
+        if form.is_valid():
 
-            if form1.is_valid():
-
-                key = form1.cleaned_data.get('key')
-                value = form1.cleaned_data.get('value')
+            key = form.cleaned_data.get('key')
+            value = form.cleaned_data.get('value')
+            query = form.cleaned_data.get('query')
+            projection = form.cleaned_data.get('projection')
 
             if key != "" and value != "":
                 query = '{"' + key + '":"' + value + '"}'
                 documents = collections.find(json.loads(query))
-            # print(query)
-        elif 'advanceFind' in request.POST:
 
-            documents = collections.find({})
-
-            if form2.is_valid():
-
-                query = form2.cleaned_data.get('query')
-                projection = form2.cleaned_data.get('projection')
-
-                if query != "" and projection == "":
-                    val = "" + query + ""
-                    print(val)
-                    documents = collections.find(json.loads(val))
-                elif query != "" and projection != "":
-                    documents = collections.find(
-                        json.loads(query), json.loads(projection))
-
-        elif 'clear' in request.POST:
-            documents = collections.find({})
+            if query != "" and projection == "":
+                val = "" + query + ""
+                print(val)
+                documents = collections.find(json.loads(val))
+            elif query != "" and projection != "":
+                documents = collections.find(
+                    json.loads(query), json.loads(projection))
 
     tuplist = []
 
@@ -236,23 +172,43 @@ def showdocs(request, db, collection):
     for doc in doclistnew:
         tuplistnew.append((doc["_id"], doc))
 
-    form3 = ExportForm(request.POST or None)
+    exportform = ExportForm(request.POST or None)
 
     if request.method == 'POST':
 
         if 'export' in request.POST:
-            if form3.is_valid():
 
-                name = form3.cleaned_data.get('name')
-                formatoptions = form3.cleaned_data.get('options')
-                print(formatoptions)
-
+            if exportform.is_valid():
+                formatoptions = exportform.cleaned_data.get('options')
+                # print(formatoptions)
                 mongo_docs = doclistnew
+                if formatoptions == "csv":
+                    response = HttpResponse(content_type='text/csv')
+                    writer = csv.writer(response)
+                    writer.writerow(mongo_docs)
+                    datetoday = str(date.today())
+                    fname = "" + collection + "_" + datetoday + ".csv"
+                    # print(fname)
+                    response['Content-Disposition'] = 'attachement; filename="{}"'.format(
+                        fname)
+                    return response
+                elif formatoptions == "json":
+
+                    json_data = json.dumps(mongo_docs, default=str)
+                    datetoday = str(date.today())
+                    fname = "" + collection + "_" + datetoday + ".json"
+                    # print(fname)
+                    response = HttpResponse(
+                        json_data, content_type='text/json')
+                    response['Content-Disposition'] = 'attachement; filename="{}"'.format(
+                        fname)
+
+                    return response
 
     #print("doclist:", doclist)
     #print("doclistnew:", doclistnew)
 
-    context = {"form1": form1, "form2": form2, "form3": form3, "db": db, "collection": collection,
+    context = {"form": form, "exportform": exportform, "db": db, "collection": collection,
                "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew}
 
     return render(request, "main/documents.html", context=context)
@@ -419,29 +375,6 @@ def _insertcollection(request, db):
 
 
 @login_required
-def _simplequery(request, db, collection):
-    clientInstance = clientpool[request.user.username]
-    collections = get_collection_instance(clientInstance, db, collection)
-
-    form = SimpleQueryForm(request.POST or None)
-
-    if request.method == 'POST':
-
-        if form.is_valid():
-
-            key = form.cleaned_data.get('key')
-            value = form.cleaned_data.get('value')
-
-    context = {"form": form}
-
-
-@login_required
-def _advancedquery(request, db, collection):
-    clientInstance = clientpool[request.user.username]
-    collections = get_collection_instance(clientInstance, db, collection)
-
-
-@login_required
 def _renamecollection(request, db, collection):
     clientInstance = clientpool[request.user.username]
 
@@ -565,7 +498,7 @@ def _insertdocumentBulk(request, db, collection):
     clientInstance = clientpool[request.user.username]
     collections = get_collection_instance(clientInstance, db, collection)
 
-    e = "Validated, Go ahead and Insert this Document :)"
+    e = None
     form = DocumentForm(request.POST or None, request.FILES or None)
 
     #form = DocumentForm(request.POST or None)
@@ -578,6 +511,8 @@ def _insertdocumentBulk(request, db, collection):
                 dictionary = form.cleaned_data.get('dictionary')
                 try:
                     json.loads(dictionary)
+                    e = "Validated, Go ahead and Insert this Document :)"
+
                 except ValueError as ex:
                     e = ex
 
