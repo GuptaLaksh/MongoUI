@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from main.forms import CollectionForm, DatabaseForm, DocumentForm, QueryForm, ExportForm
+from main.forms import CollectionForm, DatabaseForm, DocumentForm, QueryForm, ExportForm, Loginform
 from django.urls import reverse_lazy
 from datetime import date
 from os import getenv
@@ -34,7 +34,7 @@ def logout_request(request):
 
 
 def login_request(request):
-    form = AuthenticationForm(request=request, data=request.POST)
+    form = Loginform(request=request, data=request.POST)
 
     if request.user.is_authenticated:
         return redirect('/')

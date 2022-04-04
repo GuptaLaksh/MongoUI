@@ -1,1 +1,67 @@
-<p>UI HOME</p>
+{% extends "base.html" %} {% load static %} {% block title %}UI HOME{% endblock %} {% block head %} {% endblock %} {% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}"> {% endblock css %}
+<!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
+
+
+
+{% block content %} 
+<div class="container">
+{% if request.user.is_authenticated %}
+<header>
+    <a href="{% url 'showdbs' %}">
+        <img class="logo" src="{% static "images/microbots.png" %}">
+    </a>
+
+    <span class="greetings"><a href="{% url 'logout' %}">
+            <button class="w-100 btn btn-outline-dark">
+                <h5>Log Out</h5>
+            </button>
+
+        </a>
+
+    </span>
+    <span class="greetings">
+        <h5 class="username">
+            Hi <b>{{ user.username }}</b>!
+        </h5>
+    </span>
+    <p>
+        {% include 'main/includes/messages.html' %}
+    </p>
+</header>
+<hr>
+
+<nav>
+    <div>
+        <b>
+            <h5>
+                <button class="right"><b><a href="/mongo">Connect to Mongo Database</a> </b></button>
+        
+        </h5>
+        </b>
+    </div>
+</nav>
+
+
+<table class="center">
+  
+    <tr>
+        <th><h2><b>Databases</b></h2></th>
+    </tr>
+    <th>Name</th>
+    <th class="prime">Size</th>
+    <th class="prime">View</th>
+    <th class="prime">Delete</th>
+  
+    </tr>
+
+{% else %}
+<p>
+    You are not logged in
+</p>
+<a href="{% url 'login' %}">
+    <h4>Log In</h4>
+</a>
+{% endif %} 
+</div>
+{% endblock %}
