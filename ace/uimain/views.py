@@ -33,6 +33,7 @@ def uilogout_request(request):
 
 
 def uilogin_request(request):
+
     form = AuthenticationForm(request=request, data=request.POST or None)
 
     if request.user.is_authenticated:
@@ -60,5 +61,9 @@ def uilogin_request(request):
 
 
 def uihome_request(request):
+    if request.user.is_authenticated:
+        pass
+    else:
+        return redirect('uilogin')
 
     return render(request, "uimain/uihome.html")

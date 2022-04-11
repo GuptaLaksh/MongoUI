@@ -1,8 +1,5 @@
 from django import forms
 
-class Loginform(forms.Form):
-    username = forms.CharField(label='username', max_length=100)
-    password = forms.CharField(label='password', max_length=100)
 
 class DatabaseForm(forms.Form):
     databaseName = forms.CharField(label='DatabaseName', max_length=100)
@@ -37,11 +34,6 @@ FORMATS = [
 ]
 
 
-class ExportForm(forms.Form):
-    options = forms.CharField(label='Which Format?',
-                              widget=forms.Select(choices=FORMATS))
-
-
 class QueryForm(forms.Form):
     key = forms.CharField(
         label='key', widget=forms.Textarea(attrs={"rows": 1, "cols": 50, "wrap": "hard", "placeholder": "key"}),  required=False
@@ -55,4 +47,15 @@ class QueryForm(forms.Form):
     projection = forms.CharField(
         label='projection', widget=forms.Textarea(attrs={"rows": 4, "cols": 50, "wrap": "hard", "placeholder": "projection"}), required=False
     )
+    options = forms.CharField(label='Which Format?',
+                              widget=forms.Select(choices=FORMATS), required=False)
 
+
+ROLES = [('readWrite', 'readWrite'), ('read', 'read')]
+
+
+class newUserForm(forms.Form):
+    newUser = forms.CharField(label='newUser', max_length=100)
+    pwd = forms.CharField(label='pwd', max_length=100)
+    role = forms.CharField(label='role',
+                           widget=forms.Select(choices=ROLES))

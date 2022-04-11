@@ -11,9 +11,10 @@ from bson.objectid import ObjectId
 from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from main.forms import CollectionForm, DatabaseForm, DocumentForm, QueryForm, ExportForm, Loginform
+from main.forms import CollectionForm, DatabaseForm, DocumentForm, QueryForm, newUserForm
 from django.urls import reverse_lazy
 from datetime import date
+from main.models import User
 from os import getenv
 import json
 import csv
@@ -21,69 +22,108 @@ import csv
 
 @login_required
 def logout_request(request):
-    if request.user is not None:
-        clientInstance = clientpool[request.user.username]
-        clientInstance.close()
-        clientpool[request.user.username] = None
-        logout(request)
-        messages.info(request, "Logout Succesfully!!")
-    else:
-        messages.error(request, "You are not logged in")
+
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+
+    clientInstance = clientpool[user]
+    clientInstance.close()
+    clientpool[user] = None
+
+    del request.session['user']
+    # request.session.flush()
+    messages.info(request, "Logout Succesfully!!")
+
+    #messages.warning(request, "You are not logged in")
 
     return redirect('login')
 
 
-def login_request(request):
-    form = Loginform(request=request, data=request.POST)
+@login_required
+def admin_page_request(request):
 
-    if request.user.is_authenticated:
-        return redirect('/')
+    user = request.session.get('user')
+    print(user)
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
+    # if user do not have permission redirect to showdbs
+    # if not admin:
+    #    return redirect('showdbs')
+
+    form = newUserForm(request.POST or None)
+    if request.method == 'POST':
+        newUser = request.POST.get('newUser')
+        pwd = request.POST.get('pwd')
+        role = request.POST.get('role')
+        db = request.POST.get('db')
+
+        '''clientInstance.admin.command(
+            'createUser', newUser,
+            pwd=pwd,
+            roles=[{'role': role, 'db': db}]
+        )'''
+
+        return redirect('showdbs')
+
+    context = {"dbs": clientInstance.list_databases(
+    ), "form": form, "current_user": user}
+    return render(request, "main/admin/adminpage.html", context=context)
+
+
+@login_required
+def login_request(request):
+    if request.session.get('user') is not None:
+        return redirect('showdbs')
 
     if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        clientInstance = get_db_handle(username, password)
+        print(clientInstance)
 
-        form = AuthenticationForm(request=request, data=request.POST)
+        if clientInstance is not None:
+            try:
+                check_user = User.objects.get(username=username)
+            except:
+                check_user = User.objects.create(username=username)
 
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            clientInstance = get_db_handle(username, password)
+            print(check_user)
 
-            if clientInstance is not None:
+            request.session['user'] = username
+            clientpool[username] = clientInstance
 
-                clientpool[username] = clientInstance
-                if not User.objects.filter(username=username).exists():
-                    User.objects.create_user(
-                        username=username, password=password)
-
-                user = authenticate(username=username, password=password)
-                if user is not None:
-                    login(request, user)
-                    messages.info(
-                        request, f"You are now logged in as {username}")
-                    return redirect('showdbs')
-                else:
-                    messages.error(request, "Invalid username or password.")
-            else:
-                messages.error(request, "Invalid username or password.")
-
+            params = {"current_user": username}
+            return redirect('showdbs')
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, 'Please enter valid Username or Password.')
 
-    return render(request, "main/login.html", context={"form": form})
+    return render(request, 'main/login.html')
 
 
 @login_required
 def showdbs(request):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    print(user)
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
-    context = {"dbs": clientInstance.list_databases(), "primelist": primelist}
+    context = {"dbs": clientInstance.list_databases(
+    ), "primelist": primelist, "current_user": user}
     return render(request, "main/database.html", context=context)
 
 
 @login_required
 def showCollections(request, db):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     collectionlist = []
     tuplist = []
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
@@ -96,15 +136,18 @@ def showCollections(request, db):
             dict({'name': collection, 'count': instance.estimated_document_count()}))
 
     context = {
-        "db": db, "tuplist": tuplist, "primelist": primelist}
+        "db": db, "tuplist": tuplist, "primelist": primelist, "current_user": user}
 
     return render(request, "main/pagecollection.html", context=context)
 
 
 @login_required
 def showdocs(request, db, collection):
-    clientInstance = clientpool[request.user.username]
-    print(request.GET)
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
     collections = get_collection_instance(clientInstance, db, collection)
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
@@ -113,75 +156,38 @@ def showdocs(request, db, collection):
     query = None
 
     form = QueryForm(request.POST or None)
-    print(request.POST)
 
+    print(request.POST)
     if request.method == 'POST':
 
         if form.is_valid():
+            if 'export' in request.POST:
 
-            key = form.cleaned_data.get('key')
-            value = form.cleaned_data.get('value')
-            query = form.cleaned_data.get('query')
-            projection = form.cleaned_data.get('projection')
+                formatoptions = form.cleaned_data.get('options')
+                key = form.cleaned_data.get('key')
+                value = form.cleaned_data.get('value')
+                query = form.cleaned_data.get('query')
+                projection = form.cleaned_data.get('projection')
 
-            if key != "" and value != "":
-                query = '{"' + key + '":"' + value + '"}'
-                documents = collections.find(json.loads(query))
+                if key != "" and value != "":
+                    querys = {key: value}
+                    documents = collections.find(querys)
 
-            if query != "" and projection == "":
-                val = "" + query + ""
-                print(val)
-                documents = collections.find(json.loads(val))
-            elif query != "" and projection != "":
-                documents = collections.find(
-                    json.loads(query), json.loads(projection))
+                elif query != "":
+                    if projection == "":
+                        val = "" + str(query) + ""
+                        print(val)
+                        documents = collections.find(json.loads(val))
+                    else:
+                        documents = collections.find(
+                            json.loads(query), json.loads(projection))
 
-    tuplist = []
+                mongo_docs = []
+                for document in documents:
+                    mongo_docs.append(document)
 
-    for document in documents:
-        tuplist.append((document['_id'], document))
+                print(mongo_docs)
 
-    #print("tuplist:", tuplist)
-
-    doclist = []
-    for id, doc in tuplist:
-        doclist.append(doc)
-    #print("doclist:", doclist)
-
-    keylist = []
-
-    for doc in doclist:
-        for key in doc.keys():
-            if key not in keylist:
-                keylist.append(key)
-
-    keylist.sort()
-    #print("keylist:", keylist)
-
-    for key in keylist:
-        for doc in doclist:
-            if key not in doc:
-                doc[key] = ""
-
-    doclistnew = []
-    for doc in doclist:
-        doc1 = sorted(doc.items())
-        doclistnew.append(dict(doc1))
-
-    tuplistnew = []
-    for doc in doclistnew:
-        tuplistnew.append((doc["_id"], doc))
-
-    exportform = ExportForm(request.POST or None)
-
-    if request.method == 'POST':
-
-        if 'export' in request.POST:
-
-            if exportform.is_valid():
-                formatoptions = exportform.cleaned_data.get('options')
-                # print(formatoptions)
-                mongo_docs = doclistnew
                 if formatoptions == "csv":
                     response = HttpResponse(content_type='text/csv')
                     writer = csv.writer(response)
@@ -205,18 +211,76 @@ def showdocs(request, db, collection):
 
                     return response
 
-    #print("doclist:", doclist)
-    #print("doclistnew:", doclistnew)
+            elif 'find' in request.POST:
+                key = form.cleaned_data.get('key')
+                value = form.cleaned_data.get('value')
+                query = form.cleaned_data.get('query')
+                projection = form.cleaned_data.get('projection')
 
-    context = {"form": form, "exportform": exportform, "db": db, "collection": collection,
-               "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew}
+                if key != "" and value != "":
+                    querys = {key: value}
+                    documents = collections.find(querys)
+
+                elif query != "":
+                    if projection == "":
+                        val = "" + str(query) + ""
+                        print(val)
+                        documents = collections.find(json.loads(val))
+                    else:
+                        documents = collections.find(
+                            json.loads(query), json.loads(projection))
+
+    tuplist = []
+
+    for document in documents:
+        tuplist.append((document['_id'], document))
+
+    # print("tuplist:", tuplist)
+
+    doclist = []
+    for id, doc in tuplist:
+        doclist.append(doc)
+    # print("doclist:", doclist)
+
+    keylist = []
+
+    for doc in doclist:
+        for key in doc.keys():
+            if key not in keylist:
+                keylist.append(key)
+
+    keylist.sort()
+    # print("keylist:", keylist)
+
+    for key in keylist:
+        for doc in doclist:
+            if key not in doc:
+                doc[key] = ""
+
+    doclistnew = []
+    for doc in doclist:
+        doc1 = sorted(doc.items())
+        doclistnew.append(dict(doc1))
+
+    tuplistnew = []
+    for doc in doclistnew:
+        tuplistnew.append((doc["_id"], doc))
+
+    # print("doclist:", doclist)
+    # print("doclistnew:", doclistnew)
+
+    context = {"form": form, "db": db, "collection": collection,
+               "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew, "current_user": user}
 
     return render(request, "main/documents.html", context=context)
 
 
 @login_required
 def _deletedatabase(request, db):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     clientInstance.drop_database(db)
 
     return redirect('showdbs')
@@ -224,7 +288,10 @@ def _deletedatabase(request, db):
 
 @login_required
 def _insertdatabase(request):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     e = None
     data = {}
 
@@ -284,14 +351,16 @@ def _insertdatabase(request):
                     except ValueError as ex:
                         e = ex
 
-    context = {"form": form, "e": e}
+    context = {"form": form, "e": e, "current_user": user}
     return render(request, "side/add_database.html", context)
 
 
 @login_required
 def _renamedatabase(request, db):
-    clientInstance = clientpool[request.user.username]
-
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     if request.method == 'POST':
 
         newname = request.POST.get('newname')
@@ -307,14 +376,20 @@ def _renamedatabase(request, db):
 
 @login_required
 def _deletecollection(request, db, collection):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     datab = clientInstance[db].drop_collection(collection)
     return redirect('showcollections', db=db)
 
 
 @login_required
 def _insertcollection(request, db):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     data = {}
     e = None
 
@@ -370,13 +445,16 @@ def _insertcollection(request, db):
                     except ValueError as ex:
                         e = ex
 
-    context = {"form": form, "db": db, "e": e}
+    context = {"form": form, "db": db, "e": e, "current_user": user}
     return render(request, "side/add_collection.html", context)
 
 
 @login_required
 def _renamecollection(request, db, collection):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
 
     if request.method == 'POST':
         newname = request.POST.get["newname"]
@@ -389,7 +467,10 @@ def _renamecollection(request, db, collection):
 
 @login_required
 def _deletedocument(request, db, collection, pk):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
     try:
         query = {"_id": ObjectId(pk)}
@@ -403,7 +484,10 @@ def _deletedocument(request, db, collection, pk):
 
 @login_required
 def _viewdocument(request, db, collection, pk):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
 
     try:
@@ -430,13 +514,16 @@ def _viewdocument(request, db, collection, pk):
         jsontext = collections.find_one(query)
 
     context = {"query": query, "jsontext": jsontext, "db": db,
-               "collection": collection, "pk": pk}
+               "collection": collection, "pk": pk, "current_user": user}
     return render(request, "side/views.html", context)
 
 
 @login_required
 def _insertdocument(request, db, collection):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
 
     e = None
@@ -489,19 +576,23 @@ def _insertdocument(request, db, collection):
                     except ValueError as ex:
                         e = ex
 
-    context = {"db": db, "collection": collection, "form": form, "e": e}
+    context = {"db": db, "collection": collection,
+               "form": form, "e": e, "current_user": user}
     return render(request, "side/insert.html", context)
 
 
 @login_required
 def _insertdocumentBulk(request, db, collection):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
 
     e = None
     form = DocumentForm(request.POST or None, request.FILES or None)
 
-    #form = DocumentForm(request.POST or None)
+    # form = DocumentForm(request.POST or None)
     if request.method == 'POST':
 
         if request.POST["action"] == 'Validate':
@@ -539,13 +630,17 @@ def _insertdocumentBulk(request, db, collection):
                     except ValueError as ex:
                         e = ex
 
-    context = {"db": db, "collection": collection, "form": form, "e": e}
+    context = {"db": db, "collection": collection,
+               "form": form, "e": e, "current_user": user}
     return render(request, "side/insert.html", context)
 
 
 @login_required
 def _editdocument(request, db, collection, pk):
-    clientInstance = clientpool[request.user.username]
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
 
     e = None
@@ -564,7 +659,7 @@ def _editdocument(request, db, collection, pk):
     form = DocumentForm(request.POST or None, initial={
                         "dictionary": json.dumps(jsontext, indent=4)})
 
-    #form = DocumentForm(request.POST or None)
+    # form = DocumentForm(request.POST or None)
 
     if request.method == 'POST':
         if request.POST["action"] == 'Validate':
@@ -594,5 +689,5 @@ def _editdocument(request, db, collection, pk):
                     e = ex
 
     context = {"jsontext": jsontext, "db": db,
-               "collection": collection, "form": form, "pk": pk, "primelist": primelist, "e": e}
+               "collection": collection, "form": form, "pk": pk, "primelist": primelist, "e": e, "current_user": user}
     return render(request, "side/edit.html", context)

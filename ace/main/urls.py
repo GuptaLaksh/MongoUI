@@ -31,6 +31,7 @@ urlpatterns = [
 
 
     path('login/', views.login_request, name="login"),
+    path('adminpage/', views.admin_page_request, name="adminpage"),
 
     path('', views.showdbs, name="showdbs"),
     path('db/<db>', views.showCollections, name="showcollections"),

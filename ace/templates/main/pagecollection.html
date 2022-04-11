@@ -22,9 +22,13 @@ Collections
         </a></span>
       <span class="greetings">
         <h5 class="username">
-          Hi <b>{{ user.username }}</b>!
+          Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!
         </h5>
       </span>
+      <span class="greetings" style="margin-right:20px;">
+        <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
+            Admin</button></a>        
+    </span>
     </header>
     <hr>
     <!--

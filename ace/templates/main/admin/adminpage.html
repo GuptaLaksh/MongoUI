@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'side/views.css' %}">
  
 
-    <title>Add Database</title>
+    <title>Admin Page</title>
 
 </head>
 
@@ -27,13 +27,18 @@
 
         <header>
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
-        
+            
         
             <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark">
                         <h5>Log Out</h5>
                     </button></a></span>
             <span class="greetings">
                 <h5 class="username">Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!</h5>
+            </span>
+            
+            <span class="greetings" style="margin-right:20px;">
+                <a href="{% url 'showdbs' %}"><button class="btn btn-success btn-large pull-left">
+                    View Site</button></a>        
             </span>
         </header>
 
@@ -51,34 +56,31 @@
         <form enctype="multipart/form-data" method="post" action="">
             {% csrf_token %}
             <hr>
-            <h2>ADD DATABASE</h2>
+            <h2>ADD USER</h2>
             <hr>
             <div class="form-group">
-                <span>DATABASE_NAME :   {{ form.databaseName }}</span>
+
+                <span>User :   {{ form.newUser }}</span>
             
+                <span>Password : {{ form.pwd }}</span>
+                
+                <span>db : <select >
+                    <option selected="selected" disabled>Database</option>
+                    {% for db in dbs %}
+                    <option value={{db.name}}>{{db.name}}</option>
+                    {% endfor %}
+                </select></span>
+                
+                <span>role :  {{ form.role }}</span>
             
-                <span style="float:right;">COLLECTION_NAME : {{ form.collectionName }}</span>
+                
+                
             </div>
             
-            <div class="form-group">
-                {{ form.myfile }}
-            </div>
             <hr>
-            {% if e is not None %}
-            <div style="color:black;">
-                <i> <b> {{e}} </b> </i>
-            </div>
-            {% endif %}
-            <hr>
-            <div class="form-group">
-                <h4>{{ form.dictionary }}</h4>
-            </div>
-
-
 
             <div class="form-group">
-                <input type="submit" name="action" value="Validate" class="btn btn-danger btn-large pull-right">
-                <input type="submit" name="action" value="Insert" class="btn btn-primary btn-large pull-right">
+                <input type="submit" name="action" value="CreateUser" class="btn btn-primary btn-large pull-right">
             </div>
 
         </form>

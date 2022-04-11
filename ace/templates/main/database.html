@@ -6,7 +6,8 @@
 
 {% block content %} 
 <div class="container">
-{% if request.user.is_authenticated %}
+
+{% if current_user %}
 <header>
     <a href="{% url 'showdbs' %}">
         <img class="logo" src="{% static "images/microbots.png" %}">
@@ -16,14 +17,16 @@
             <button class="w-100 btn btn-outline-dark">
                 <h5>Log Out</h5>
             </button>
-
         </a>
-
     </span>
     <span class="greetings">
         <h5 class="username">
-            Hi <b>{{ user.username }}</b>!
+            Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!
         </h5>
+    </span>
+    <span class="greetings" style="margin-right:20px;">
+        <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
+            Admin</button></a>        
     </span>
     <p>
         {% include 'main/includes/messages.html' %}
@@ -103,13 +106,6 @@
     {% endfor %}
 </table>
 
-{% else %}
-<p>
-    You are not logged in
-</p>
-<a href="{% url 'login' %}">
-    <h4>Log In</h4>
-</a>
 {% endif %} 
 </div>
 {% endblock %}
