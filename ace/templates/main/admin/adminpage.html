@@ -13,6 +13,8 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     
     <link rel="stylesheet" type="text/css" href="{% static 'side/views.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'main/admin/adminpage.css' %}">
+
  
 
     <title>Admin Page</title>
@@ -51,40 +53,80 @@
         
     
         
-        
-        
         <form enctype="multipart/form-data" method="post" action="">
             {% csrf_token %}
             <hr>
             <h2>ADD USER</h2>
             <hr>
-            <div class="form-group">
+            <div>
 
-                <span>User :   {{ form.newUser }}</span>
+                <span class="form-group">User :   {{ form.newUser }}</span>
             
-                <span>Password : {{ form.pwd }}</span>
-                
-                <span>db : <select >
-                    <option selected="selected" disabled>Database</option>
-                    {% for db in dbs %}
-                    <option value={{db.name}}>{{db.name}}</option>
-                    {% endfor %}
-                </select></span>
-                
-                <span>role :  {{ form.role }}</span>
-            
+                <span class="form-group">Password : {{ form.pwd }}</span>
                 
                 
-            </div>
-            
-            <hr>
+                
 
-            <div class="form-group">
-                <input type="submit" name="action" value="CreateUser" class="btn btn-primary btn-large pull-right">
-            </div>
+                <div id="checkboxes" class="container">
+                    
+                    <table class="center">
 
+                        <tr>
+                            <th>
+                                <h2><b>Permissions</b></h2>
+                            </th>
+                        </tr>
+                        <div class="col-lg-6">
+                            <div class="ibox ">
+                               
+                                <div class="ibox-content">
+                
+                                    <table class="table table-hover">
+                                        <thead>
+                                          <tr>
+                                        <th>Databases</th>
+                                        <th>Read</th>
+                                        <th>ReadWrite  </th>
+                                    </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for db in dbs %}
+                                            <tr>
+                                        <td>
+                                            {{db.name}}
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="Read-{{db.name}}">
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="ReadWrite-{{db.name}}">
+                                        </td>
+                                    </tr>
+                                        
+                                    {% endfor %}  
+                
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <hr>
+                            <span class="form-group">
+                                <input type="submit" name="action" value="CreateUser" class="btn btn-primary btn-large pull-right">
+                            </span>  
+                            <hr>
+                        </div>
+                        
+                        
+                    </table>
+                    
+                </div>
+                
+                   
+                
+                </div>    
+         
+            
         </form>
-        <hr>
         
     </div>
 
@@ -92,6 +134,60 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
+    <script>
+        function clickFn(event) {
+            const checkbox = event.currentTarget;
+            checkbox.value = checkbox.checked ? 'dark' : 'light';
+            event.currentTarget.closest('form').submit()
+          }
+    </script>
+
+    
+<script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
+<script src="{% static 'js/popper.min.js' %} "></script>
+<script src="{% static 'js/bootstrap.js' %} "></script>
+<script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
+
+<script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
+
+
+
+<!-- Peity -->
+<script src="{% static 'js/plugins/peity/jquery.peity.min.js' %} "></script>
+
+<!-- Custom and plugin javascript -->
+<script src="{% static 'js/inspinia.js' %} "></script>
+<script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
+
+<!-- iCheck -->
+
+<script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
+<!-- Peity -->
+<script src="{% static 'js/demo/peity-demo.js' %} "></script>
+
+<script>
+    $(document).ready(function () {
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+</script>
+<script>
+    $('.demo3').click(function () {
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover this imaginary file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false
+        }, function () {
+            swal("Deleted!", "Your imaginary file has been deleted.", "success");
+        });
+    });
+</script>
 </body>
 
 </html>

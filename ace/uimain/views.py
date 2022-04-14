@@ -41,21 +41,20 @@ def uilogin_request(request):
 
     if request.method == 'POST':
 
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.info(
-                    request, f"You are now logged in as {username}")
-                return redirect('uihome')
-            else:
-                messages.error(request, "Invalid username or password.")
-
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.info(
+                request, f"You are now logged in as {username}")
+            return redirect('uihome')
         else:
             messages.error(request, "Invalid username or password.")
+
+    else:
+        messages.error(request, "Invalid username or password.")
 
     return render(request, "uimain/uilogin.html", context={"form": form})
 

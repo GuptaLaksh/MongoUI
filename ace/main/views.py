@@ -16,6 +16,7 @@ from django.urls import reverse_lazy
 from datetime import date
 from main.models import User
 from os import getenv
+from pymongo import errors
 import json
 import csv
 
@@ -54,22 +55,36 @@ def admin_page_request(request):
     #    return redirect('showdbs')
 
     form = newUserForm(request.POST or None)
+
+    print(request.POST)
     if request.method == 'POST':
         newUser = request.POST.get('newUser')
         pwd = request.POST.get('pwd')
-        role = request.POST.get('role')
-        db = request.POST.get('db')
 
-        '''clientInstance.admin.command(
+        dbs = clientInstance.list_databases()
+
+        roles = []
+        for db in dbs:
+            db_name = db['name']
+            name = 'ReadWrite-'+str(db_name)
+            name1 = 'Read-'+str(db_name)
+            type = request.POST.get(name)
+            type1 = request.POST.get(name1)
+            if type == 'on':
+                roles.append({'role': 'readWrite', 'db': db_name})
+            elif type1 == 'on':
+                roles.append({'role': 'read', 'db': db_name})
+
+        clientInstance.admin.command(
             'createUser', newUser,
             pwd=pwd,
-            roles=[{'role': role, 'db': db}]
-        )'''
+            roles=roles
+        )
 
         return redirect('showdbs')
 
-    context = {"dbs": clientInstance.list_databases(
-    ), "form": form, "current_user": user}
+    context = {"dbs": clientInstance.list_databases(), "form": form,
+               "current_user": user}
     return render(request, "main/admin/adminpage.html", context=context)
 
 
@@ -281,7 +296,11 @@ def _deletedatabase(request, db):
     if user is None:
         return redirect('login')
     clientInstance = clientpool[user]
-    clientInstance.drop_database(db)
+    try:
+        clientInstance.drop_database(db)
+    except errors.OperationFailure:
+        messages.warning("You don't have authorized permissions!")
+        return redirect('showdbs')
 
     return redirect('showdbs')
 
@@ -380,7 +399,12 @@ def _deletecollection(request, db, collection):
     if user is None:
         return redirect('login')
     clientInstance = clientpool[user]
-    datab = clientInstance[db].drop_collection(collection)
+    try:
+        clientInstance[db].drop_collection(collection)
+    except errors.OperationFailure:
+        messages.warning("You don't have authorized permissions!")
+        return redirect('showcollections', db=db)
+
     return redirect('showcollections', db=db)
 
 
@@ -390,6 +414,7 @@ def _insertcollection(request, db):
     if user is None:
         return redirect('login')
     clientInstance = clientpool[user]
+
     data = {}
     e = None
 
@@ -477,7 +502,11 @@ def _deletedocument(request, db, collection, pk):
     except InvalidId:
         query = {"_id": (pk)}
 
-    collections.find_one_and_delete(query)
+    try:
+        collections.find_one_and_delete(query)
+    except errors.OperationFailure:
+        messages.warning("You don't have access")
+        return redirect('showdocs', db=db, collection=collection)
 
     return redirect('showdocs', db=db, collection=collection)
 

@@ -1,0 +1,26 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+span {
+    margin-top: 30px;
+}
+
+th.prime,
+td.prime {
+    text-align: center;
+}
+
+.prime button a {
+    text-decoration: none;
+    color: white;
+}

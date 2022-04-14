@@ -26,3 +26,8 @@ textarea {
     overflow: auto;
     border: solid 15px grey;
 }
+
+#checkboxes ul {
+    margin: 0;
+    list-style: none;
+}
