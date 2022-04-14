@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Documents{% endblock %}
+{% extends 'base.html' %} {% load static %} {% block title %}Mongo | Documents{% endblock %}
 
 
 <!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
@@ -21,6 +21,7 @@
 {% block css %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'side/doc.css' %}">
 
 
 
@@ -77,6 +78,7 @@
     <span id="advance">
       {{form.query}}{{form.projection}}
     </span>
+    <hr>
     <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
         <path
@@ -91,7 +93,7 @@
       <a href="{% url 'showdocs' db=db collection=collection%}">ClearFilter</a></button>
 
     
-    <div style="overflow: hidden;">
+    
       <span style:"float:right;">
         {{form.options}}
 
@@ -103,25 +105,18 @@
           <input type="submit" name="export" value="Export All Queried Docs"></button>
       </span>
 
-    </div>
+    
   </form>
-
-
 
   <hr>
 </div>
 
 
 
-<div class="container">
+<div class="container" style="">
 
   <table class="center">
-
-    <tr>
-      <th>
-        <h2><b>Documents</b></h2>
-      </th>
-    </tr>
+    
     <div class="col-lg-6" style="overflow: hidden;">
       <div class="ibox "  style="overflow: hidden;">
 
@@ -239,27 +234,6 @@
 </div>
 -->
 
-<script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
-<script src="{% static 'js/popper.min.js' %} "></script>
-<script src="{% static 'js/bootstrap.js' %} "></script>
-<script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
-
-<script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
-
-
-
-<!-- Peity -->
-<script src="{% static 'js/plugins/peity/jquery.peity.min.js' %} "></script>
-
-<!-- Custom and plugin javascript -->
-<script src="{% static 'js/inspinia.js' %} "></script>
-<script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
-
-<!-- iCheck -->
-
-<script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
-<!-- Peity -->
-<script src="{% static 'js/demo/peity-demo.js' %} "></script>
 
 <script>
   $(document).ready(function () {

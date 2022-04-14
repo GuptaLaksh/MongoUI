@@ -34,8 +34,6 @@ def uilogout_request(request):
 
 def uilogin_request(request):
 
-    form = AuthenticationForm(request=request, data=request.POST or None)
-
     if request.user.is_authenticated:
         return redirect('/')
 
@@ -53,10 +51,7 @@ def uilogin_request(request):
         else:
             messages.error(request, "Invalid username or password.")
 
-    else:
-        messages.error(request, "Invalid username or password.")
-
-    return render(request, "uimain/uilogin.html", context={"form": form})
+    return render(request, "uimain/uilogin.html")
 
 
 def uihome_request(request):

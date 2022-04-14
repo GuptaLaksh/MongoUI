@@ -11,55 +11,15 @@ body {
     background-color: #f5f5f5;
 }
 
-.form-signin {
-    width: 100%;
-    max-width: 360px;
-    padding: 40px;
-    margin: auto;
-    border: 1px solid black;
-}
-
-.differentiator {
-    border-color: black;
-}
-
-.form-signin .checkbox {
-    font-weight: 400;
-}
-
-.form-signin .form-floating:focus-within {
-    z-index: 2;
-}
-
-.form-signin input[type="username"] {
-    margin-bottom: -1px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.form-signin input[type="password"] {
-    margin-bottom: 10px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-
 .logo {
     width: 210px;
     margin-bottom: 20px;
 }
 
-.headbox {
-    margin: auto;
-    margin-top: 2%;
-    width: 40%;
-}
-
-header {
-    margin: auto;
-    color: red;
-}
-
-#cred {
-    margin: 5px;
-    margin-bottom: 10px;
+.mainlogo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    padding-bottom: 50px;
 }

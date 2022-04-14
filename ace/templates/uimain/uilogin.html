@@ -16,7 +16,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login</title>
+    <title>UI | Login</title>
 
     <link href="{% static 'css/animate.css' %}" rel="stylesheet">
     <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
@@ -28,17 +28,22 @@
 
 <body class="gray-bg">
 
+    
     <div class="loginColumns animated fadeInDown">
+
+        <a href="/"><img src="{% static 'images/logo.svg' %}" class='mainlogo'></a>
         
         <div class="row">
 
             <div class="col-md-6">
-                <h2 class="font-bold">Welcome to IN+</h2>
+                <h2 class="font-bold">Welcome to Microland</h2>
                 <img src="{% static 'images/microbots.png' %}" class='logo'>
                 
             </div>
             <div class="col-md-6">
+                
                 {% include 'main/includes/messages.html' %}
+                
                 <div class="ibox-content">
                     <form class="m-t" method="POST" role="form" action="">
                         {% csrf_token %}
