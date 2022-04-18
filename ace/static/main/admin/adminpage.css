@@ -24,3 +24,7 @@ td.prime {
     text-decoration: none;
     color: white;
 }
+
+.point {
+    cursor: pointer;
+}

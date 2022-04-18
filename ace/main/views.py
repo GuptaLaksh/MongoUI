@@ -38,7 +38,7 @@ def logout_request(request):
 
     #messages.warning(request, "You are not logged in")
 
-    return redirect('login')
+    return redirect('uilogin')
 
 
 @login_required
