@@ -495,6 +495,29 @@ def _deletedocument(request, db, collection, pk):
     user = request.session.get('user')
     if user is None:
         return redirect('login')
+
+    print('calling...')
+    clientInstance = clientpool[user]
+    collections = get_collection_instance(clientInstance, db, collection)
+    try:
+        query = {"_id": ObjectId(pk)}
+    except InvalidId:
+        query = {"_id": (pk)}
+
+    try:
+        collections.find_one_and_delete(query)
+        print("working...")
+    except errors.OperationFailure:
+        messages.warning("You don't have access")
+        return redirect('showdocs', db=db, collection=collection)
+
+    return redirect('showdocs', db=db, collection=collection)
+
+
+def _deletedocumentselect(request, db, collection, pk):
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
     clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
     try:
@@ -567,7 +590,7 @@ def _insertdocument(request, db, collection):
         json_data = open(url)
 
     data = json.loads(json_data.read())
-    form = DocumentForm(request.POST or None, initial={
+    form = DocumentForm(request.POST or None, request.FILES or None, initial={
                         "dictionary": (json.dumps(data, indent=4))})
 
     if request.method == 'POST':

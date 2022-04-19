@@ -1,141 +1,149 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block title %}
-Mongo | Collections
-{% endblock title %}
-<!-- /home/itpauser/donkeyUI/ace/static/ace/home.css -->
-{% block css %}
-<link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">{% endblock %}
- 
-<link href="{% static 'css/bootstrap.min.css' %}  " rel="stylesheet">
-<link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
-<link href="{% static 'css/plugins/iCheck/custom.css' %}" rel="stylesheet">
-<link href="{% static 'css/animate.css' %}" rel="stylesheet">
-<link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+<head>
+
+  <title>Mongo | Collections</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
+
+  <link href="{% static 'css/bootstrap.min.css' %}  " rel="stylesheet">
+  <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/iCheck/custom.css' %}" rel="stylesheet">
+  <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %} " rel="stylesheet">
+
+</head>
 
 
-{% block content %}
-<div class="container">
 
-    <header>
-      <a href="{% url 'showdbs' %}">
-        <img class="logo" src="{% static 'images/microbots.png' %}">
-      </a>
-      <span class="greetings"><a href="{% url 'logout' %}">
-          <button class="w-100 btn btn-outline-dark">
-            <h5>Log Out</h5>
-          </button>
-        </a></span>
-      <span class="greetings">
-        <h5 class="username">
+
+<body>
+  <div id="wrapper">
+
+      <header>
+        <a href="{% url 'showdbs' %}">
+          <img class="logo" src="{% static "images/microbots.png" %}">
+        </a>
+
+
+        <span class="greetings"><a href="{% url 'logout' %}">
+            <i class="fa fa-sign-out"></i> Log out
+          </a>
+        </span>
+        <span class="greetings username">
+
           Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!
-        </h5>
-      </span>
-      <span class="greetings" style="margin-right:20px;">
-        <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
-            Admin</button></a>        
-    </span>
-    </header>
-    <hr>
-    <!--
-    <nav>
-    <select name="databases" id="databases">
-      {% for dbname in dbs %}  <option value="{{dbname}}">{{dbname}}</option>{% endfor %}
-    </select>
-    </nav>
-    -->
-    <nav>
-      <p>
-        <b>
-          <h5>
-            <a href="{% url 'showdbs' %}">
-              <button>{{db}}</button>
-            </a>
-            <a href="{% url '_insertcollection' db=db %}"><button class="right"><b>Add Collection</b></button>
-          </h5>
-        </b>
-      </p>
-    </nav>
-    <table class="center">
 
-      <tr>
-          <th>
-              <h2><b>Collections</b></h2>
-          </th>
-      </tr>
-      <div class="col-lg-6">
-          <div class="ibox ">
-             
-              <div class="ibox-content">
+        </span>
+        <span class="greetings" style="margin-right:20px;">
+          <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
+              Admin</button></a>
+        </span>
 
-                  <table class="table table-hover">
-                      <thead>
-                          <tr>
-      <th>Name Collection</th>
-      <th>Document Count</th>
-      <th class="prime">View</th>
-      <th class="prime">Delete</th>
-     
-    </tr>
-                      </thead>
-                      <tbody>
-                       {% for dict in tuplist %}
-    <tr>
-      <td>
-        {{ dict.name }}
-      </td>
-      
-      <td>
-        {{ dict.count }}
-      </td>
-      
-      <td class="prime">
-        <a href="{% url 'showdocs' db=db collection=dict.name %}">
-        <button type="button" class="btn btn-success">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill"
-            viewBox="0 0 16 16">
-            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
-            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
-          </svg>
-          
-          
-        </button></a>
-      </td>
-      {% if db in primelist %}
-      <td class="prime">
-        <button type="button" class="btn btn-outline-danger" id="remove" disabled>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
-            viewBox="0 0 16 16">
-            <path
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-            </path>
-          </svg>
-        </button>
-      </td>
-      {% else %}
-      <td class="prime">
-      <a href="{% url '_deletecollection' db=db collection=dict.name %}" onclick="return confirm('Are you sure you want to delete this Collection ?');">
-        <button type="button" class="btn btn-outline-danger" id="remove">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
-            viewBox="0 0 16 16">
-            <path
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-            </path>
-          </svg>
-        </button>
-      </a>
-      </td>
-      {% endif %}
-    </tr>
-    {% endfor %}
+      </header>
+      <hr>
 
-                      </tbody>
-                  </table>
-              </div>
-          </div>
+      <nav>
+
+        <div>
+          <b>
+            <h5>
+              <a href="{% url 'showdbs' %}">
+                <button>{{db}}</button>
+              </a>
+              <a href="{% url '_insertcollection' db=db %}"><button class="right"><b>Add Collection</b></button>
+            </h5>
+          </b>
+        </div>
+      </nav>
+
+      <div class="wrapper wrapper-content">
+        
+          <h3>Collections</h3>
+       
       </div>
 
- <!--
+      <div>
+
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name Collection</th>
+                  <th>Document Count</th>
+                  <th class="prime">View</th>
+                  <th class="prime">Delete</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                {% for dict in tuplist %}
+                <tr>
+                  <td>
+                    {{ dict.name }}
+                  </td>
+
+                  <td>
+                    {{ dict.count }}
+                  </td>
+
+                  <td class="prime">
+                    <a href="{% url 'showdocs' db=db collection=dict.name %}">
+                      <button type="button" class="btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                          class="bi bi-eye-fill" viewBox="0 0 16 16">
+                          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                          <path
+                            d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                          </path>
+                        </svg>
+
+
+                      </button></a>
+                  </td>
+                  <input type="hidden" id="Url" data-url="{% url '_deletecollection' db=db collection=dict.name %}" />
+                  {% if db in primelist %}
+    
+                  <td class="prime">
+                    <button type="button" class="btn btn-outline-danger btn-sm demo4" id="remove" disabled>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path
+                          d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                        </path>
+                      </svg>
+                    </button>
+                  </td>
+                  {% else %}
+                  <td class="prime">
+
+                    <button type="button" class="btn btn-outline-danger btn-sm demo4" id="remove">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path
+                          d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                        </path>
+                      </svg>
+                    </button>
+
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+
+              </tbody>
+            </table>
+      
+
+      </div>
+
+
+
+
+
+
+
+
+
+    <!--
     {% if db in primelist %}
       <div class="container">
               <input type="input" placeholder="{{db}}" name="newname" size="22" disabled>
@@ -155,53 +163,97 @@ Mongo | Collections
           </form>
         </div>
           {% endif %}-->
- 
-</div>
+
+  </div>
 
 
-<script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
-<script src="{% static 'js/popper.min.js' %} "></script>
-<script src="{% static 'js/bootstrap.js' %} "></script>
-<script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
+  <!-- Mainly scripts -->
+  <script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
+  <script src="{% static 'js/popper.min.js' %} "></script>
+  <script src="{% static 'js/bootstrap.js' %} "></script>
+  <script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
+  <script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
 
-<script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
+  <!-- Custom and plugin javascript -->
+  <script src="{% static 'js/inspinia.js' %} "></script>
+  <script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
+
+  <!-- Sweet alert -->
+  <script src="{% static 'js/plugins/sweetalert/sweetalert.min.js' %} "></script>
 
 
+  <!-- Peity -->
+  <script src="{% static 'js/plugins/peity/jquery.peity.min.js' %} "></script>
+  <script src="{% static 'js/demo/peity-demo.js' %} "></script>
 
-<!-- Peity -->
-<script src="{% static 'js/plugins/peity/jquery.peity.min.js' %} "></script>
+  <!-- iCheck -->
+  <script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
 
-<!-- Custom and plugin javascript -->
-<script src="{% static 'js/inspinia.js' %} "></script>
-<script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
 
-<!-- iCheck -->
-
-<script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
-<!-- Peity -->
-<script src="{% static 'js/demo/peity-demo.js' %} "></script>
-
-<script>
+  <script>
     $(document).ready(function () {
-        $('.i-checks').iCheck({
-            checkboxClass: 'icheckbox_square-green',
-            radioClass: 'iradio_square-green',
-        });
+      $('.i-checks').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
     });
-</script>
-<script>
-    $('.demo3').click(function () {
+    $(document).ready(function () {
+
+      $('.demo1').click(function () {
+        swal({
+          title: "Welcome in Alerts",
+          text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+        });
+      });
+
+      $('.demo2').click(function () {
+        swal({
+          title: "Good job!",
+          text: "You clicked the button!",
+          type: "success"
+        });
+      });
+
+      $('.demo3').click(function () {
+        swal({
+          title: "Are you sure?",
+          text: "You will not be able to recover this file!",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Yes, delete it!",
+          closeOnConfirm: false
+        }, function () {
+          swal("Deleted!", "Your file has been deleted.", "success");
+        });
+      });
+
+      $('.demo4').click(function () {
         swal({
             title: "Are you sure?",
-            text: "You will not be able to recover this imaginary file!",
+            text: "Your will not be able to recover this file!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes, delete it!",
-            closeOnConfirm: false
-        }, function () {
-            swal("Deleted!", "Your imaginary file has been deleted.", "success");
-        });
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+          },
+          function (isConfirm) {
+            if (isConfirm) {
+              var url = $("#Url").attr("data-url");
+              document.location.href = url
+              swal("Deleted!", "Your file has been deleted.", "success");
+            } else {
+              swal("Cancelled", "Your file is safe :)", "error");
+            }
+          });
+      });
+
+
     });
-</script>
-{% endblock %}
+  </script>
+
+
+</body>

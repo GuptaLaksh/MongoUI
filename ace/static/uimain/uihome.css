@@ -40,14 +40,6 @@ td.prime {
     margin-right: 5px;
 }
 
-.error {
-    color: red;
-}
-
-.info {
-    color: green;
-}
-
 .prime button a {
     text-decoration: none;
     color: white;

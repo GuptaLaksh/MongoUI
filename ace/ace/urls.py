@@ -21,6 +21,8 @@ from main.admin import main_site
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('mongo/', include('main.urls')),
     path('', include('uimain.urls')),
+    path('mongo/', include('main.urls')),
+    path('patch/', include('patchmain.urls')),
+    
 ]

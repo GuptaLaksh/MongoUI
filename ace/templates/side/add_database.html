@@ -3,19 +3,24 @@
 <html lang="en">
 
 <head>
+
+    <title>Mongo | Database Insertion</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}  " rel="stylesheet">
+    <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+    <link href="{% static 'css/plugins/iCheck/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+  
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    
-    <link rel="stylesheet" type="text/css" href="{% static 'side/views.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'side/add_db.css' %}">
  
 
-    <title>Mongo | Database Insertion</title>
+    
 
 </head>
 
@@ -23,7 +28,7 @@
 
 
 <body>
-    <div class="container">
+    <div >
 
         <header>
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
@@ -46,13 +51,11 @@
         
     
         
-        
-        
-        <form enctype="multipart/form-data" method="post" action="">
+        <form enctype="multipart/form-data" method="post" action="" class=>
             {% csrf_token %}
             <hr>
             <h2>ADD DATABASE</h2>
-            <hr>
+            
             <div class="form-group">
                 <span>DATABASE_NAME :   {{ form.databaseName }}</span>
             
@@ -82,7 +85,7 @@
             </div>
 
         </form>
-        <hr>
+        
         
     </div>
 

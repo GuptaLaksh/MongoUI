@@ -15,13 +15,13 @@ tr:nth-child(even) {
     background-color: #dddddd;
 }
 
-span {
-    margin-top: 30px;
-}
-
 .greetings {
     float: right;
     margin: auto;
+}
+
+.greetings a {
+    color: black;
 }
 
 .logo {
@@ -42,14 +42,6 @@ td.prime {
     margin-top: 5px;
     margin-bottom: 0;
     margin-right: 5px;
-}
-
-.error {
-    color: red;
-}
-
-.info {
-    color: green;
 }
 
 .prime button a {
