@@ -10,11 +10,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
+
+    
+   
+
     <link href="{% static 'css/bootstrap.min.css' %}  " rel="stylesheet">
-    <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
-    <link href="{% static 'css/plugins/iCheck/custom.css' %}" rel="stylesheet">
-    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
-    <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+  <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+  <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/codemirror/codemirror.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/jasny/jasny-bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/dropzone/dropzone.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/dropzone/basic.css' %}" rel="stylesheet">
+  <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+
   
     
     <link rel="stylesheet" type="text/css" href="{% static 'side/add_db.css' %}">
@@ -66,6 +74,25 @@
             <div class="form-group">
                 {{ form.myfile }}
             </div>
+
+            <div class="wrapper wrapper-content animated fadeIn">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="ibox ">
+                                
+                            <div class="ibox-content">
+
+                                <div class="custom-file">
+                                    <input id="logo" type="file" class="custom-file-input point" >
+                                    <label for="logo" class="custom-file-label">Choose file...</label>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <hr>
             {% if e is not None %}
             <div style="color:black;">
@@ -80,8 +107,8 @@
 
 
             <div class="form-group">
-                <input type="submit" name="action" value="Validate" class="btn btn-danger btn-large pull-right">
-                <input type="submit" name="action" value="Insert" class="btn btn-primary btn-large pull-right">
+                <input type="submit" name="action" value="Validate" class="form-control btn btn-danger btn-large pull-right">
+                <input type="submit" name="action" value="Insert" class="form-control btn btn-primary btn-large pull-right">
             </div>
 
         </form>
@@ -89,10 +116,69 @@
         
     </div>
 
+    <!-- Mainly s<!-- Mainly scripts -->
+    <script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
+    <script src="{% static 'js/popper.min.js' %} "></script>
+    <script src="{% static 'js/bootstrap.js' %} "></script>
+    <script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
+    <script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'js/inspinia.js' %} "></script>
+    <script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
+
+    <!-- Jasny -->
+    <script src="{% static 'js/plugins/jasny/jasny-bootstrap.min.js' %} "></script>
+   
+    <!-- DROPZONE -->
+    <script src="{% static 'js/plugins/dropzone/dropzone.js' %} "></script>
+    
+
+    <!-- CodeMirror -->
+    <script src="{% static 'js/plugins/codemirror/codemirror.js' %} "></script>
+    <script src="{% static 'js/plugins/codemirror/mode/xml/xml.js' %} "></script>
+
+    <script>
+        Dropzone.options.dropzoneForm = {
+            paramName: "file", // The name that will be used to transfer the file
+            maxFilesize: 2, // MB
+            dictDefaultMessage: "<strong>Drop files here or click to upload. </strong></br> (This is just a demo dropzone. Selected files are not actually uploaded.)"
+        };
+
+        $(document).ready(function(){
+
+            var editor_one = CodeMirror.fromTextArea(document.getElementById("code1"), {
+                lineNumbers: true,
+                matchBrackets: true
+            });
+
+            var editor_two = CodeMirror.fromTextArea(document.getElementById("code2"), {
+                lineNumbers: true,
+                matchBrackets: true
+            });
+
+            var editor_two = CodeMirror.fromTextArea(document.getElementById("code3"), {
+                lineNumbers: true,
+                matchBrackets: true
+            });
+
+            var editor_two = CodeMirror.fromTextArea(document.getElementById("code4"), {
+                lineNumbers: true,
+                matchBrackets: true
+            });
+
+
+            $('.custom-file-input').on('change', function() {
+                let fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').addClass("selected").html(fileName);
+            });
+
+       });
     </script>
+
+
+
+    
 </body>
 
 </html>

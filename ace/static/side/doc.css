@@ -58,3 +58,56 @@ form {
 .point {
     cursor: pointer;
 }
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.greetings {
+    float: right;
+    margin: auto;
+}
+
+.greetings a {
+    color: black;
+}
+
+.logo {
+    width: 210px;
+    margin-bottom: auto;
+}
+
+th.prime,
+td.prime {
+    text-align: center;
+}
+
+.greetings button {
+    padding: 2px 2px 0px 0px;
+}
+
+.prime button a {
+    text-decoration: none;
+    color: white;
+}
+
+.right {
+    float: right;
+}
+
+a {
+    text-decoration: none;
+}
+
+.hidecol {
+    display: none;
+}

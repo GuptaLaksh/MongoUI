@@ -31,3 +31,7 @@ textarea {
     margin: 0;
     list-style: none;
 }
+
+.point {
+    cursor: pointer;
+}

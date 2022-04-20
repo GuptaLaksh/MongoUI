@@ -10,9 +10,9 @@
   <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
   <link href="{% static 'css/plugins/iCheck/custom.css' %}" rel="stylesheet">
   <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+ 
   <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
  
-  <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
   <link rel="stylesheet" type="text/css" href="{% static 'side/doc.css' %}">
 
 
@@ -90,8 +90,17 @@
           <input type="submit" name="export" value="Export All Queried Docs"></button>
       
         </span>
+
+        
     
   </form>
+  <button class="btn btn-outline btn-success" id="toggle"><i class="fa fa-trash" aria-hidden="true"></i>
+    Delete Many </button>
+    <button class="deletemany btn btn-outline btn-danger hidecol newdemo4" id="hidbutton"><i class="fa fa-trash" aria-hidden="true"></i>
+      Delete</button>
+
+      <button class="selectmany btn btn-outline btn-warning hidecol" id="selectall"><i class="fa fa-select" aria-hidden="true"></i>
+        SelectAll</button>
   
 </div>
 
@@ -108,6 +117,7 @@
       <th>View</th>
       <th>Edit</th>
       <th>Delete</th>
+      <th class="hidecol">Delete Many</th>
       {% for key in keylist %}
       <th scope='col'>{{key}}</th>
       {% endfor %}
@@ -131,19 +141,22 @@
         </a>
       </td>
       <td class="prime headcol1">
-        <a href="{% url '_editdocument' db=db collection=collection pk=id %}"><button type="button" class="btn btn-info">
+        <button type="button" class="btn btn-info">
             <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
 
               <path
                 d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" />
             </svg>
           </button>
-        </a>
       </td>
-      <input type="hidden" id="Url" data-url="{% url '_deletedocument' db=db collection=collection pk=id %}" />
+      
+      
       {% if db in primelist %}
       <td class="prime">
+
         <button type="button" class="btn btn-outline-danger btn-sm demo4" disabled>
+          
+          
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
             class="bi bi-trash-fill" viewBox="0 0 16 16">
             <path
@@ -153,16 +166,18 @@
       </td>
       {% else %}
       <td class="prime headcol2">
-          <button type="button" class="btn btn-outline-danger btn-sm demo4">
+          <button type="button" class="btn btn-outline-danger btn-sm demo4" id="{{id}}">
+           
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
               class="bi bi-trash-fill" viewBox="0 0 16 16">
               <path
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
               </path>
-            </svg></button></a>
+            </svg></button>
       
       </td>
       {% endif %}
+      <td class="hidecol" style="width:50px;"><input name="checkbox" type="checkbox" id="{{id}}"></td>
 
       {% for val in doc.values %}
       <td>{{val}}</td>
@@ -238,10 +253,11 @@
 <script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
 
 <script>
-  $(function () {
-    $('.always').change(function () {
-      $('#advance').toggle(this.checked);
-    }).change(); //ensure visible state matches initially
+  $('#toggle').click(function(){
+    if ( $('.hidecol').css('display') == 'none' )
+      $('.hidecol').css('display','table-cell');
+    else
+      $('.hidecol').css('display','none');
   });
 
   $(document).ready(function () {
@@ -282,6 +298,7 @@ $(document).ready(function () {
     });
 
     $('.demo4').click(function () {
+      var id = $(this).attr('id');
         swal({
                 title: "Are you sure?",
                 text: "Your will not be able to recover this file!",
@@ -295,8 +312,8 @@ $(document).ready(function () {
             },
             function (isConfirm) {
                 if (isConfirm) {
-                    var url = $("#Url").attr("data-url");
-                    document.location.href = url
+                    var url = "{% url '_deletedocument' db=db collection=collection pk=1 %}".replace('1', id) ;
+                    document.location.href = url;
                     swal("Deleted!", "Your file has been deleted.", "success");
                 } else {
                     swal("Cancelled", "Your file is safe :)", "error");
@@ -304,8 +321,80 @@ $(document).ready(function () {
             });
     });
 
+    
+
+  $(document).ready(function() {
+    $("#selectall").click(function() {
+        var checkBoxes = $("input[name=checkbox");
+        checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+        var $this = $(this);
+        $this.toggleClass('SeeMore2');
+        if($this.hasClass('SeeMore2')){
+            $this.text('Deselect All');         
+        } else {
+            $this.text('Select All');
+        }
+    });                 
+});
+
+
+$(document).ready(function () {
+
+      var tmp = [];
+      
+      $("input[name='checkbox']").change(function() {
+      var id = $(this).attr('id');
+        if ($(this).is(':checked')) {
+          tmp.push(id);
+        }else{
+        tmp.splice($.inArray(id, tmp),1);
+        }
+      });
+
+     
+
+      $('#hidbutton').on('click', function () {
+        
+          swal({
+                  title: "Are you sure?",
+                  text: "Your will not be able to recover!",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#DD6B55",
+                  confirmButtonText: "Yes, delete it!",
+                  cancelButtonText: "No, cancel plx!",
+                  closeOnConfirm: false,
+                  closeOnCancel: false
+              },
+              function (isConfirm) {
+                  if (isConfirm) {
+                    tmp.forEach(function(id){
+                      var url = "{% url '_deletedocument' db=db collection=collection pk=1 %}".replace('1', id) ;
+                      document.location.href = url;
+                    });
+                      swal("Deleted!", "Your file/s has/ve been deleted.", "success");
+                  } else {
+                      swal("Cancelled", "Your file/s is/are safe :)", "error");
+                  }
+              });
+      });
+    });
+    
+
 
 });
+      
+      
+
+      $(document).ready(function () {
+        $('.always').change(function () {
+          $('#advance').toggle(this.checked);
+        }).change(); //ensure visible state matches initially
+      });
+
+
+
+ 
 
 </script>
 </body>
