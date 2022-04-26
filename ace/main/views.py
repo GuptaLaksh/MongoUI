@@ -12,7 +12,7 @@ from bson.errors import InvalidId
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from main.forms import CollectionForm, DatabaseForm, DocumentForm, QueryForm, newUserForm
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from datetime import date
 from main.models import User
 from os import getenv
@@ -134,9 +134,11 @@ def showdbs(request):
         return redirect('login')
     clientInstance = clientpool[user]
 
+    baseHref = reverse_lazy('showdbs')
+
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
-    context = {"dbs": clientInstance.list_databases(
+    context = {"baseHref": baseHref, "dbs": clientInstance.list_databases(
     ), "primelist": primelist, "current_user": user}
     return render(request, "main/database.html", context=context)
 
@@ -158,8 +160,8 @@ def showCollections(request, db):
         tuplist.append(
             dict({'name': collection, 'count': instance.estimated_document_count()}))
 
-    context = {
-        "db": db, "tuplist": tuplist, "primelist": primelist, "current_user": user}
+    context = {"dbs": clientInstance.list_databases(),
+               "db": db, "tuplist": tuplist, "primelist": primelist, "current_user": user}
 
     return render(request, "main/pagecollection.html", context=context)
 
@@ -174,6 +176,19 @@ def showdocs(request, db, collection):
     collections = get_collection_instance(clientInstance, db, collection)
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+    dblist = []
+
+    scroll_list = []
+
+    for db in clientInstance.list_databases():
+        dblist.append(db['name'])
+        print(db)
+
+    print(dblist)
+
+    for db in dblist:
+        scroll_list.append(
+            (db, list(clientInstance[db].list_collection_names())))
 
     documents = collections.find({})
     query = None
@@ -292,9 +307,10 @@ def showdocs(request, db, collection):
     # print("doclist:", doclist)
     # print("doclistnew:", doclistnew)
 
-    context = {"form": form, "db": db, "collection": collection,
+    context = {"scroll_list": scroll_list, "form": form, "dbs": clientInstance.list_databases(), "db": db, "collection": collection,
                "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew, "current_user": user}
 
+    print(request.POST)
     return render(request, "main/documents.html", context=context)
 
 
@@ -500,11 +516,11 @@ def _renamecollection(request, db, collection):
 
 @login_required
 def _deletedocument(request, db, collection, pk):
+    print(request.POST)
     user = request.session.get('user')
     if user is None:
         return redirect('login')
 
-    print('calling...')
     clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
 
@@ -525,22 +541,40 @@ def _deletedocument(request, db, collection, pk):
     return redirect('showdocs', db=db, collection=collection)
 
 
-def _deletedocumentselect(request, db, collection, pk):
+def _deletemultidocument(request, db, collection):
     user = request.session.get('user')
     if user is None:
         return redirect('login')
     clientInstance = clientpool[user]
     collections = get_collection_instance(clientInstance, db, collection)
-    try:
-        query = {"_id": ObjectId(pk)}
-    except InvalidId:
-        query = {"_id": (pk)}
 
+    if request.method == 'POST':
+
+        ids = request.POST.getlist('ids[]')
+
+        queries = []
+
+        for id in ids:
+            try:
+                query = {"_id": ObjectId(id)}
+            except InvalidId:
+                query = {"_id": (id)}
+
+            queries.append(query)
+
+        for query in queries:
+            collections.find_one_and_delete(query)
+            print("multidelete")
+
+        return redirect('showdocs', db=db, collection=collection)
+
+    '''
     try:
         collections.find_one_and_delete(query)
     except errors.OperationFailure:
         messages.warning("You don't have access")
         return redirect('showdocs', db=db, collection=collection)
+    '''
 
     return redirect('showdocs', db=db, collection=collection)
 
@@ -709,6 +743,7 @@ def _editdocument(request, db, collection, pk):
     e = None
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
     try:
         query = {"_id": ObjectId(pk)}
     except InvalidId:

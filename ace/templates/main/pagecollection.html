@@ -3,7 +3,7 @@
 <head>
 
   <title>Mongo | Collections</title>
-  <link rel="stylesheet" type="text/css" href="{% static 'main/home.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'main/collection.css' %}">
 
   <link href="{% static 'css/bootstrap.min.css' %}  " rel="stylesheet">
   <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
@@ -43,13 +43,30 @@
       <hr>
 
       <nav>
+        
+        <ul>
+          <li><a href="{% url 'showdbs' %}">Databases</a>
+            <ul>
+              {% for db in dbs %}
+              <li>
+                <a class="" href="{% url 'showcollections' db=db.name %}">
+                  {{db.name}} &raquo;
+                </a>
+                
+  
+              </li>
+              {% endfor %}
+            </ul>
+  
+  
+          </li>
+        </ul>
+       
 
         <div>
           <b>
             <h5>
-              <a href="{% url 'showdbs' %}">
-                <button>{{db}}</button>
-              </a>
+              
               <a href="{% url '_insertcollection' db=db %}"><button class="right"><b>Add Collection</b></button>
             </h5>
           </b>
@@ -58,7 +75,7 @@
 
       <div class="wrapper wrapper-content">
         
-          <h3>Collections</h3>
+          <h3>Collections - {{ db}}</h3>
        
       </div>
 
@@ -253,6 +270,12 @@
 
 
     });
+
+    $('#floorplanSelect').on('change', function(e) {
+      $('.tab-pane').removeClass('active in')
+      $('#' + $(e.currentTarget).val()).addClass("active in");
+    })
+
   </script>
 
 

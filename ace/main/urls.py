@@ -17,7 +17,9 @@ from main.views import (
     _insertcollection,
     _renamecollection,
 
+
     _deletedocument,
+    _deletemultidocument,
     _viewdocument,
     _editdocument,
     _insertdocument,
@@ -34,8 +36,8 @@ urlpatterns = [
     path('adminpage/', views.admin_page_request, name="adminpage"),
 
     path('', views.showdbs, name="showdbs"),
-    path('db/<db>', views.showCollections, name="showcollections"),
-    path('db/<db>/<collection>', views.showdocs, name="showdocs"),
+    path('db/<db>/', views.showCollections, name="showcollections"),
+    path('db/<db>/<collection>/', views.showdocs, name="showdocs"),
 
 
     path('db/<db>/deletedatabase/',
@@ -54,6 +56,9 @@ urlpatterns = [
 
     path('db/<db>/<collection>/<pk>/deletedocument/',
          views._deletedocument, name='_deletedocument'),
+    path('db/<db>/<collection>/deletemultidocument/',
+         views._deletemultidocument, name='_deletemultidocument'),
+
     path('db/<db>/<collection>/<pk>/viewdocument/',
          views._viewdocument, name='_viewdocument'),
     path('db/<db>/<collection>/<pk>/editdocument/',

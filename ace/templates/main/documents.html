@@ -5,197 +5,224 @@
 
   <title>Mongo | Documents</title>
 
-  
+
   <link href="{% static 'css/bootstrap.min.css' %}  " rel="stylesheet">
   <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
   <link href="{% static 'css/plugins/iCheck/custom.css' %}" rel="stylesheet">
   <link href="{% static 'css/animate.css' %}" rel="stylesheet">
- 
+
   <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
- 
-  <link rel="stylesheet" type="text/css" href="{% static 'side/doc.css' %}">
+
+  <link rel="stylesheet" type="text/css" href="{% static 'main/documents.css' %}">
 
 
 </head>
 
 <body>
 
-<div id="wrapper">
-  <header>
-    <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
+  <div id="wrapper">
+    <header>
+      <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
 
 
-    <span class="greetings"><a href="{% url 'logout' %}">
-      <i class="fa fa-sign-out"></i> Log out
+      <span class="greetings"><a href="{% url 'logout' %}">
+          <i class="fa fa-sign-out"></i> Log out
         </a></span>
-    <span class="greetings">
-      <h5 class="username">Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!</h5>
-    </span>
-    <span class="greetings" style="margin-right:20px;">
-      <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
-          Admin</button></a>
-    </span>
-  </header>
-  <hr>
-  <nav>
-    
+      <span class="greetings">
+        <h5 class="username">Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!</h5>
+      </span>
+      <span class="greetings" style="margin-right:20px;">
+        <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
+            Admin</button></a>
+      </span>
+    </header>
+    <hr>
+    <nav>
+
+      <ul><li><a href="{% url 'showdbs' %}">Databases</a>
+          <ul>
+            {% for db,list in scroll_list %}
+            <li>
+              <a href="{% url 'showcollections' db=db %}">
+                {{db}} 
+              </a>
+              <ul class="sub">
+                {% for item in list %}
+                <li>
+                  <a href="#">{{item}}</a>
+                </li>
+                {% endfor %}
+
+              </ul>
+            </li>
+            {% endfor %}
+          </ul>
+        </ul>
+      </li>
+      </ul>
+     
+
+
+
       <b>
         <h5>
-          <a href="{% url 'showcollections' db=db %}"><button>{{collection}}</button>
-          </a>
+         
           <a href="{% url '_insertdocument' db=db collection=collection %}"><button class="right"><b>Insert
                 Document</b></button></a>
           <a href="{% url '_insertdocumentBulk' db=db collection=collection %}"><button class="right"><b>Bulk Insert
                 Documents</b></button></a>
         </h5>
       </b>
-   
-  </nav>
+
+    </nav>
 
 
-<div>
-  <form action="" method="post">
-    {% csrf_token %}
-    {{form.key}}{{form.value}}
-    <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-      <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-      <path
-        d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z" />
-      </svg>
-    <input type="hidden" name="find" class"btn btn-primary" style="height:60px;">Find</button>
-    <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-      <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-      <path
-        d="M576 384C576 419.3 547.3 448 512 448H205.3C188.3 448 172 441.3 160 429.3L9.372 278.6C3.371 272.6 0 264.5 0 256C0 247.5 3.372 239.4 9.372 233.4L160 82.75C172 70.74 188.3 64 205.3 64H512C547.3 64 576 92.65 576 128V384zM271 208.1L318.1 256L271 303C261.7 312.4 261.7 327.6 271 336.1C280.4 346.3 295.6 346.3 304.1 336.1L352 289.9L399 336.1C408.4 346.3 423.6 346.3 432.1 336.1C442.3 327.6 442.3 312.4 432.1 303L385.9 256L432.1 208.1C442.3 199.6 442.3 184.4 432.1 175C423.6 165.7 408.4 165.7 399 175L352 222.1L304.1 175C295.6 165.7 280.4 165.7 271 175C261.7 184.4 261.7 199.6 271 208.1V208.1z" />
-      </svg>
-    <a href="{% url 'showdocs' db=db collection=collection%}">Clear</a></button>
-
-    Advance <input type="checkbox" class="always point" />
-    <div id="advance">
-      {{form.query}}{{form.projection}}
-    </div>
-    
-    
-    <hr>
-    
-    
-      
-    <span class="pull-right">{{form.options}}
-
-        <button><svg width=15 height=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+    <div>
+      <form action="" method="post">
+        {% csrf_token %}
+        {{form.key}}{{form.value}}
+        <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
             <path
-              d="M192 312C192 298.8 202.8 288 216 288H384V160H256c-17.67 0-32-14.33-32-32L224 0H48C21.49 0 0 21.49 0 48v416C0 490.5 21.49 512 48 512h288c26.51 0 48-21.49 48-48v-128H216C202.8 336 192 325.3 192 312zM256 0v128h128L256 0zM568.1 295l-80-80c-9.375-9.375-24.56-9.375-33.94 0s-9.375 24.56 0 33.94L494.1 288H384v48h110.1l-39.03 39.03C450.3 379.7 448 385.8 448 392s2.344 12.28 7.031 16.97c9.375 9.375 24.56 9.375 33.94 0l80-80C578.3 319.6 578.3 304.4 568.1 295z" />
+              d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z" />
+          </svg>
+          <input type="hidden" name="find" class"btn btn-primary" style="height:60px;">Find</button>
+        <button><svg height=15 width=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+            <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+            <path
+              d="M576 384C576 419.3 547.3 448 512 448H205.3C188.3 448 172 441.3 160 429.3L9.372 278.6C3.371 272.6 0 264.5 0 256C0 247.5 3.372 239.4 9.372 233.4L160 82.75C172 70.74 188.3 64 205.3 64H512C547.3 64 576 92.65 576 128V384zM271 208.1L318.1 256L271 303C261.7 312.4 261.7 327.6 271 336.1C280.4 346.3 295.6 346.3 304.1 336.1L352 289.9L399 336.1C408.4 346.3 423.6 346.3 432.1 336.1C442.3 327.6 442.3 312.4 432.1 303L385.9 256L432.1 208.1C442.3 199.6 442.3 184.4 432.1 175C423.6 165.7 408.4 165.7 399 175L352 222.1L304.1 175C295.6 165.7 280.4 165.7 271 175C261.7 184.4 261.7 199.6 271 208.1V208.1z" />
+          </svg>
+          <a href="{% url 'showdocs' db=db collection=collection%}">Clear</a></button>
+
+        Advance <input type="checkbox" class="always point" />
+        <div id="advance">
+          {{form.query}}{{form.projection}}
+        </div>
+
+
+        <hr>
+
+
+
+        <span class="pull-right">{{form.options}}
+
+          <button><svg width=15 height=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+              <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+              <path
+                d="M192 312C192 298.8 202.8 288 216 288H384V160H256c-17.67 0-32-14.33-32-32L224 0H48C21.49 0 0 21.49 0 48v416C0 490.5 21.49 512 48 512h288c26.51 0 48-21.49 48-48v-128H216C202.8 336 192 325.3 192 312zM256 0v128h128L256 0zM568.1 295l-80-80c-9.375-9.375-24.56-9.375-33.94 0s-9.375 24.56 0 33.94L494.1 288H384v48h110.1l-39.03 39.03C450.3 379.7 448 385.8 448 392s2.344 12.28 7.031 16.97c9.375 9.375 24.56 9.375 33.94 0l80-80C578.3 319.6 578.3 304.4 568.1 295z" />
             </svg>
-          <input type="submit" name="export" value="Export All Queried Docs"></button>
-      
+            <input type="submit" name="export" value="Export All Queried Docs"></button>
+
         </span>
 
-        
-    
-  </form>
-  <button class="btn btn-outline btn-success" id="toggle"><i class="fa fa-trash" aria-hidden="true"></i>
-    Delete Many </button>
-    <button class="deletemany btn btn-outline btn-danger hidecol newdemo4" id="hidbutton"><i class="fa fa-trash" aria-hidden="true"></i>
-      Delete</button>
-
-      <button class="selectmany btn btn-outline btn-warning hidecol" id="selectall"><i class="fa fa-select" aria-hidden="true"></i>
-        SelectAll</button>
-  
-</div>
 
 
-<div class="wrapper wrapper-content " style="width: 100%;overflow-x: scroll;overflow-y: visible;padding: 0;">   
-<div class="wrapper wrapper-content " style="width: 100%;overflow-x: scroll;overflow-y: visible;padding: 0;">
-  <hr>   
-  <h3>Documents </h3>
-</div>
-
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th>View</th>
-      <th>Edit</th>
-      <th>Delete</th>
-      <th class="hidecol">Delete Many</th>
-      {% for key in keylist %}
-      <th scope='col'>{{key}}</th>
-      {% endfor %}
-    </tr>
-  </thead>
-  <tbody>
-    {% for id, doc in tuplist %}
-    <tr>
-      <td class="prime headcol" id="view">
-        <a href="{% url '_viewdocument' db=db collection=collection pk=id %}"><button type="button"
-            class="btn btn-success">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-              class="bi bi-eye-fill" viewBox="0 0 16 16">
-              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
-              <path
-                d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
-              </path>
-            </svg>
-
-          </button>
-        </a>
-      </td>
-      <td class="prime headcol1">
-        <button type="button" class="btn btn-info">
-            <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-
-              <path
-                d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" />
-            </svg>
-          </button>
-      </td>
-      
-      
-      {% if db in primelist %}
-      <td class="prime">
-
-        <button type="button" class="btn btn-outline-danger btn-sm demo4" disabled>
-          
-          
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-trash-fill" viewBox="0 0 16 16">
-            <path
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-            </path>
-          </svg></button>
-      </td>
-      {% else %}
-      <td class="prime headcol2">
-          <button type="button" class="btn btn-outline-danger btn-sm demo4" id="{{id}}">
-           
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-              class="bi bi-trash-fill" viewBox="0 0 16 16">
-              <path
-                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
-              </path>
-            </svg></button>
-      
-      </td>
-      {% endif %}
-      <td class="hidecol" style="width:50px;"><input name="checkbox" type="checkbox" id="{{id}}"></td>
-
-      {% for val in doc.values %}
-      <td>{{val}}</td>
-      {% endfor %}
-    </tr>
-    {% endfor %}
-
-  </tbody>
-</table>
+      </form>
+      <button class="btn btn-outline btn-success" id="toggle"><i class="fa fa-trash" aria-hidden="true"></i>
+        Delete Many </button>
+      <button class="deletemany btn btn-outline btn-danger hidecol newdemo4" id="hidbutton"><i class="fa fa-trash"
+          aria-hidden="true"></i>
+        Delete</button>
 
 
 
-</div>
+    </div>
+
+
+    <div class="wrapper wrapper-content " style="width: 100%;overflow-x: scroll;overflow-y: visible;padding: 0;">
+      <div class="wrapper wrapper-content " style="width: 100%;overflow-x: scroll;overflow-y: visible;padding: 0;">
+        <hr>
+        <h3>Documents  - {{collection}}</h3>
+      </div>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>View</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th class="hidecol"><input type="checkbox" id="selectall"></th>
+            {% for key in keylist %}
+            <th scope='col'>{{key}}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for id, doc in tuplist %}
+          <tr>
+            <td class="prime headcol" id="view">
+              <a href="{% url '_viewdocument' db=db collection=collection pk=id %}"><button type="button"
+                  class="btn btn-success">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                    <path
+                      d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z">
+                    </path>
+                  </svg>
+
+                </button>
+              </a>
+            </td>
+            <td class="prime headcol1">
+              <button type="button" class="btn btn-info">
+                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+
+                  <path
+                    d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" />
+                </svg>
+              </button>
+            </td>
+
+
+            {% if db in primelist %}
+            <td class="prime">
+
+              <button type="button" class="btn btn-outline-danger btn-sm demo4" disabled>
+
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-trash-fill" viewBox="0 0 16 16">
+                  <path
+                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                  </path>
+                </svg></button>
+            </td>
+            {% else %}
+            <td class="prime headcol2">
+              <button type="button" class="btn btn-outline-danger btn-sm demo4" id="{{id}}">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-trash-fill" viewBox="0 0 16 16">
+                  <path
+                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z">
+                  </path>
+                </svg></button>
+
+            </td>
+            {% endif %}
+            <form>
+              {% csrf_token %}
+              <td class="hidecol" style="width:50px;"><input type="checkbox" class="checkbox" id="{{id}}"></td>
+            </form>
+
+            {% for val in doc.values %}
+            <td>{{val}}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+
+
+
+    </div>
 
 
 
 
-<!--
+    <!--
 <div class="container" style="overflow: hidden;">
   {% if db in primelist %}
 
@@ -230,61 +257,75 @@
 
 
 
-<!-- Mainly scripts -->
-<script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
-<script src="{% static 'js/popper.min.js' %} "></script>
-<script src="{% static 'js/bootstrap.js' %} "></script>
-<script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
-<script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
+    <!-- Mainly scripts -->
+    <script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
+    <script src="{% static 'js/popper.min.js' %} "></script>
+    <script src="{% static 'js/bootstrap.js' %} "></script>
+    <script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %} "></script>
+    <script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %} "></script>
 
-<!-- Custom and plugin javascript -->
-<script src="{% static 'js/inspinia.js' %} "></script>
-<script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'js/inspinia.js' %} "></script>
+    <script src="{% static 'js/plugins/pace/pace.min.js' %} "></script>
 
-<!-- Sweet alert -->
-<script src="{% static 'js/plugins/sweetalert/sweetalert.min.js' %} "></script>
+    <!-- Sweet alert -->
+    <script src="{% static 'js/plugins/sweetalert/sweetalert.min.js' %} "></script>
 
 
-<!-- Peity -->
-<script src="{% static 'js/plugins/peity/jquery.peity.min.js' %} "></script>
-<script src="{% static 'js/demo/peity-demo.js' %} "></script>
+    <!-- Peity -->
+    <script src="{% static 'js/plugins/peity/jquery.peity.min.js' %} "></script>
+    <script src="{% static 'js/demo/peity-demo.js' %} "></script>
 
-<!-- iCheck -->
-<script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
+    <!-- iCheck -->
+    <script src="{% static 'js/plugins/iCheck/icheck.min.js' %} "></script>
 
-<script>
-  $('#toggle').click(function(){
-    if ( $('.hidecol').css('display') == 'none' )
-      $('.hidecol').css('display','table-cell');
-    else
-      $('.hidecol').css('display','none');
-  });
+    <script>
+      $(document).ready(function () {
+        $('#toggle').click(function () {
+          if ($('.hidecol').css('display') == 'none')
+            $('.hidecol').css('display', 'table-cell');
+          else
+            $('.hidecol').css('display', 'none');
+        });
 
-  $(document).ready(function () {
-    $('.i-checks').iCheck({
-        checkboxClass: 'icheckbox_square-green',
-        radioClass: 'iradio_square-green',
-    });
-});
-$(document).ready(function () {
+        $('.checkbox').on('click', function () {
+          if ($('.checkbox:checked').length == $('.checkbox').length) {
+            $('#selectall').prop('checked', true);
+          } else {
+            $('#selectall').prop('checked', false);
+          }
+        });
+      });
+    </script>
 
-    $('.demo1').click(function () {
-        swal({
+    <script>
+      $(document).ready(function () {
+        $('.i-checks').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+
+        $('.demo1').click(function () {
+          swal({
             title: "Welcome in Alerts",
             text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+          });
         });
-    });
 
-    $('.demo2').click(function () {
-        swal({
+        $('.demo2').click(function () {
+          swal({
             title: "Good job!",
             text: "You clicked the button!",
             type: "success"
+          });
         });
-    });
 
-    $('.demo3').click(function () {
-        swal({
+        $('.demo3').click(function () {
+          swal({
             title: "Are you sure?",
             text: "You will not be able to recover this file!",
             type: "warning",
@@ -292,109 +333,168 @@ $(document).ready(function () {
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes, delete it!",
             closeOnConfirm: false
-        }, function () {
+          }, function () {
             swal("Deleted!", "Your file has been deleted.", "success");
+          });
         });
-    });
 
-    $('.demo4').click(function () {
-      var id = $(this).attr('id');
-        swal({
-                title: "Are you sure?",
-                text: "Your will not be able to recover this file!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, cancel plx!",
-                closeOnConfirm: false,
-                closeOnCancel: false
+        $('.demo4').click(function () {
+          var id = $(this).attr('id');
+          swal({
+              title: "Are you sure?",
+              text: "Your will not be able to recover this file!",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, cancel plx!",
+              closeOnConfirm: false,
+              closeOnCancel: false
             },
             function (isConfirm) {
-                if (isConfirm) {
-                    var url = "{% url '_deletedocument' db=db collection=collection pk=1 %}".replace('1', id) ;
-                    document.location.href = url;
-                    swal("Deleted!", "Your file has been deleted.", "success");
-                } else {
-                    swal("Cancelled", "Your file is safe :)", "error");
-                }
+              if (isConfirm) {
+                var url = "{% url '_deletedocument' db=db collection=collection pk=1 %}".replace('1', id);
+                document.location.href = url;
+                swal("Deleted!", "Your file has been deleted.", "success");
+              } else {
+                swal("Cancelled", "Your file is safe :)", "error");
+              }
             });
-    });
-
-    
-
-  $(document).ready(function() {
-    $("#selectall").click(function() {
-        var checkBoxes = $("input[name=checkbox");
-        checkBoxes.prop("checked", !checkBoxes.prop("checked"));
-        var $this = $(this);
-        $this.toggleClass('SeeMore2');
-        if($this.hasClass('SeeMore2')){
-            $this.text('Deselect All');         
-        } else {
-            $this.text('Select All');
-        }
-    });                 
-});
+        });
 
 
-$(document).ready(function () {
-
-      var tmp = [];
-      
-      $("input[name='checkbox']").change(function() {
-      var id = $(this).attr('id');
-        if ($(this).is(':checked')) {
-          tmp.push(id);
-        }else{
-        tmp.splice($.inArray(id, tmp),1);
-        }
       });
-
-     
-
-      $('#hidbutton').on('click', function () {
-        
-          swal({
-                  title: "Are you sure?",
-                  text: "Your will not be able to recover!",
-                  type: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#DD6B55",
-                  confirmButtonText: "Yes, delete it!",
-                  cancelButtonText: "No, cancel plx!",
-                  closeOnConfirm: false,
-                  closeOnCancel: false
-              },
-              function (isConfirm) {
-                  if (isConfirm) {
-                    tmp.forEach(function(id){
-                      var url = "{% url '_deletedocument' db=db collection=collection pk=1 %}".replace('1', id) ;
-                      document.location.href = url;
-                    });
-                      swal("Deleted!", "Your file/s has/ve been deleted.", "success");
-                  } else {
-                      swal("Cancelled", "Your file/s is/are safe :)", "error");
-                  }
-              });
-      });
-    });
-    
-
-
-});
-      
-      
 
       $(document).ready(function () {
         $('.always').change(function () {
           $('#advance').toggle(this.checked);
         }).change(); //ensure visible state matches initially
       });
+    </script>
 
 
 
- 
 
-</script>
+
+
+    <script>
+      $(document).ready(function () {
+
+        var tmp = [];
+
+        $('#selectall').on('click', function () {
+          if (this.checked) {
+            $('.checkbox').each(function () {
+              this.checked = true;
+              var id = $(this).attr('id');
+              if ($.inArray(id, tmp) == -1)
+                tmp.push(id);
+            });
+          } else {
+            $('.checkbox').each(function () {
+              this.checked = false;
+              var id = $(this).attr('id');
+              tmp.splice($.inArray(id, tmp), 1);
+            });
+          }
+        });
+
+        var el = document.getElementsByName("csrfmiddlewaretoken");
+        csrf_value = el[0].getAttribute("value");
+        $('#hidbutton').on('click', function () {
+          console.log(tmp);
+          swal({
+              title: "Are you sure?",
+              text: "Your will not be able to recover!",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, cancel plx!",
+              closeOnConfirm: false,
+              closeOnCancel: false
+            },
+            function (isConfirm) {
+              if (isConfirm) {
+                console.log(tmp)
+                $.ajax({
+                  type: 'POST',
+                  url: "{% url '_deletemultidocument' db=db collection=collection %}",
+                  data: {
+                    'ids[]': tmp,
+                    csrfmiddlewaretoken: csrf_value
+                  },
+                });
+                swal("Deleted!", "Your file/s has/ve been deleted.", "success");
+                location.reload();
+              } else {
+                swal("Cancelled", "Your file/s is/are safe :)", "error");
+                location.reload();
+              }
+            });
+        });
+
+
+
+
+        $(".checkbox").change(function () {
+          var id = $(this).attr('id');
+          if ($(this).is(':checked')) {
+            if ($.inArray(id, tmp) == -1)
+              tmp.push(id);
+          } else {
+            tmp.splice($.inArray(id, tmp), 1);
+          }
+        });
+
+        var el = document.getElementsByName("csrfmiddlewaretoken");
+        csrf_value = el[0].getAttribute("value");
+        $('#hidbutton').on('click', function () {
+          console.log(tmp);
+          swal({
+              title: "Are you sure?",
+              text: "Your will not be able to recover!",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, cancel plx!",
+              closeOnConfirm: false,
+              closeOnCancel: false
+            },
+            function (isConfirm) {
+              if (isConfirm) {
+                console.log(tmp)
+                $.ajax({
+                  type: 'POST',
+                  url: "{% url '_deletemultidocument' db=db collection=collection %}",
+                  data: {
+                    'ids[]': tmp,
+                    csrfmiddlewaretoken: csrf_value
+                  },
+                });
+                swal("Deleted!", "Your file/s has/ve been deleted.", "success");
+                location.reload();
+              } else {
+                swal("Cancelled", "Your file/s is/are safe :)", "error");
+                location.reload();
+              }
+            });
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+
+        $("#source").change(function () {
+
+          var el = $(this);
+
+          var name = el.val();
+
+          $("#status").text("{% for item in scroll_list.db %}<li><option>item</option></li>{% endfor %})")
+
+        })
+      });
+    </script>
 </body>

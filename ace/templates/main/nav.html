@@ -1,48 +1,16 @@
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <div class="logo-nav">
-        <a href="{{ baseHref }}">
-          <img src="{{ baseHref }}public/img/mongo-express-logo.png" />
-        </a>
-      </div>
-      <a class="navbar-brand" href="">Mongo Express</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        
-<li>
-    <a href="{{ dbUrl }}">Database:</a>
-  </li>
-  <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ dbName }}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      {% for db in databases %}
-      <li><a href="{{ baseHref }}db/{{ db }}/">{{ db | url_encode }}</a></li>
-      {% endfor %}
-    </ul>
-  </li>
-  <li>
-    <a href="{{ dbUrl }}"><span class="glyphicon glyphicon-chevron-right"></span></a>
-  </li>
-  <li>
-    <a href="{{ collectionUrl }}">Collection:</a>
-  </li>
-  <li class="dropdown">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ collectionName }}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      {% for collection in collections %}
-      <li><a href="{{ dbUrl }}/{{ collection | url_encode }}">{{ collection }}</a></li>
-      {% endfor %}
-    </ul>
-  </li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div>
+<nav>
+  <ul>  
+  <li><a href="#">Databases:</a> 
+      <ul>
+        {% for db in dbs %}
+        <li><a href="{% url 'showcollections' db=db.name %}">{{db.name}}</a></li> 
+        <ul>
+          {% for dict in tuplist %}
+          <li><a href="{% url 'showdocuments' db=dict.name %}">{{ dict.name }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endfor %} 
+      </ul> 
+    </li> 
+  </ul>
 </nav>

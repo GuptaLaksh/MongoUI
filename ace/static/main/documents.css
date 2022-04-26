@@ -1,3 +1,117 @@
+.headcol {
+    position: sticky;
+    left: 0;
+    width: 5em;
+    top: auto;
+    border-top-width: 1px;
+    /*only relevant for first row*/
+    margin-top: -1px;
+    /*compensate for top border*/
+}
+
+.headcol1 {
+    position: sticky;
+    left: 60;
+    width: 5em;
+    top: auto;
+    border-top-width: 1px;
+    /*only relevant for first row*/
+    margin-top: -1px;
+    /*compensate for top border*/
+}
+
+.headcol2 {
+    position: sticky;
+    left: 120;
+    width: 5em;
+    top: auto;
+    border-top-width: 1px;
+    /*only relevant for first row*/
+    margin-top: -1px;
+    /*compensate for top border*/
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th {
+    white-space: nowrap;
+}
+
+td,
+tr {
+    white-space: nowrap;
+    background-color: rgba(255, 255, 255, 0.87);
+}
+
+form {
+    display: block;
+    margin-top: 0em;
+}
+
+.tab-pane>form {
+    padding-bottom: 5px;
+}
+
+.point {
+    cursor: pointer;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+.greetings {
+    float: right;
+    margin: auto;
+}
+
+.greetings a {
+    color: black;
+}
+
+.logo {
+    width: 210px;
+    margin-bottom: auto;
+}
+
+th.prime,
+td.prime {
+    text-align: center;
+}
+
+.greetings button {
+    padding: 2px 2px 0px 0px;
+}
+
+.prime button a {
+    text-decoration: none;
+    color: white;
+}
+
+.right {
+    float: right;
+}
+
+a {
+    text-decoration: none;
+}
+
+.hidecol {
+    display: none;
+}
+
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -124,6 +238,14 @@ li ul {
     position: absolute;
     left: 200px;
     top: 0;
+    display: none;
+}
+
+ul.sub {
+    position: absolute;
+    left: 200px;
+    top: 0;
+    display: none;
 }
 
 ul li a {
@@ -142,4 +264,18 @@ ul {
     list-style: none;
     width: 200px;
     border-bottom: 1px solid #ccc;
+}
+
+li:hover ul,
+li.over ul {
+    display: block;
+}
+
+ul.sub {
+    display: none;
+}
+
+li:hover ul.sub,
+li.over ul.sub {
+    display: block;
 }
