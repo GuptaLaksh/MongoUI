@@ -71,10 +71,10 @@ li ul {
 ul li a {
     display: block;
     text-decoration: none;
-    color: #777;
+    color: rgb(14, 9, 9);
     background: #fff;
     padding: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid rgb(27, 1, 1);
     border-bottom: 0;
 }
 

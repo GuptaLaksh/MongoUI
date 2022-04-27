@@ -180,15 +180,15 @@ def showdocs(request, db, collection):
 
     scroll_list = []
 
-    for db in clientInstance.list_databases():
-        dblist.append(db['name'])
-        print(db)
+    for dbx in clientInstance.list_databases():
+        dblist.append(dbx['name'])
+        print(dbx)
 
     print(dblist)
 
-    for db in dblist:
+    for dbx in dblist:
         scroll_list.append(
-            (db, list(clientInstance[db].list_collection_names())))
+            (dbx, list(clientInstance[dbx].list_collection_names())))
 
     documents = collections.find({})
     query = None
@@ -592,7 +592,9 @@ def _viewdocument(request, db, collection, pk):
     except InvalidId:
         query = {"_id": (pk)}
 
+    print("Query:", query)
     jsontext = collections.find_one(query)
+    print(jsontext)
 
     jsontext.pop("_id")
 

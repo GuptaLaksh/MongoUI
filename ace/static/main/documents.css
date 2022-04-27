@@ -241,21 +241,24 @@ li ul {
     display: none;
 }
 
-ul.sub {
-    position: absolute;
-    left: 200px;
-    top: 0;
-    display: none;
-}
-
 ul li a {
     display: block;
     text-decoration: none;
-    color: #777;
+    color: rgb(14, 9, 9);
     background: #fff;
     padding: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid rgb(27, 1, 1);
     border-bottom: 0;
+}
+
+li:hover ul,
+li.over ul {
+    display: block;
+}
+
+li:hover ul.showme,
+li.over ul.showme {
+    display: none;
 }
 
 ul {
@@ -266,16 +269,10 @@ ul {
     border-bottom: 1px solid #ccc;
 }
 
-li:hover ul,
-li.over ul {
-    display: block;
-}
-
-ul.sub {
+.showme {
     display: none;
 }
 
-li:hover ul.sub,
-li.over ul.sub {
+.showhim:hover .showme {
     display: block;
 }

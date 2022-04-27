@@ -40,18 +40,18 @@ urlpatterns = [
     path('db/<db>/<collection>/', views.showdocs, name="showdocs"),
 
 
-    path('db/<db>/deletedatabase/',
+    path('db/<db>/deletedatabase',
          views._deletedatabase, name='_deletedatabase'),
-    path('db/<db>/renamedatabase/',
+    path('db/<db>/renamedatabase',
          views._renamedatabase, name='_renamedatabase'),
-    path('db/insertdatabase/',
+    path('db/insertdatabase',
          views._insertdatabase, name='_insertdatabase'),
 
-    path('db/<db>/<collection>/deletecollection/',
+    path('db/<db>/<collection>/deletecollection',
          views._deletecollection, name='_deletecollection'),
-    path('db/<db>/insertcollection/',
+    path('db/<db>/insertcollection',
          views._insertcollection, name='_insertcollection'),
-    path('db/<db>/<collection>/renamecollection/',
+    path('db/<db>/<collection>/renamecollection',
          views._renamecollection, name='_renamecollection'),
 
     path('db/<db>/<collection>/<pk>/deletedocument/',
@@ -59,7 +59,7 @@ urlpatterns = [
     path('db/<db>/<collection>/deletemultidocument/',
          views._deletemultidocument, name='_deletemultidocument'),
 
-    path('db/<db>/<collection>/<pk>/viewdocument/',
+    path('db/<db>/<collection>/<pk>/viewdocument',
          views._viewdocument, name='_viewdocument'),
     path('db/<db>/<collection>/<pk>/editdocument/',
          views._editdocument, name='_editdocument'),

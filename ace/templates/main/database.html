@@ -20,8 +20,6 @@
                  <a href="{% url 'uihome' %}">
                      <img class="logo" src="{% static "images/microbots.png" %}">
                  </a>
-
-
                  <span class="greetings"><a href="{% url 'logout' %}">
                          <i class="fa fa-sign-out"></i> Log out
                      </a>
@@ -40,25 +38,25 @@
              <hr>
 
              <nav>
-        
                 <ul>  
-                <li><a href="{% url 'showdbs' %}">Databases</a> 
-                    
-                  </li> 
+                <li>
+                    <a href="{% url 'showdbs' %}">Databases</a> 
+                </li> 
                 </ul>
-             
-      
-             
-                <span>
+            
                      <b>
                          <h5>
-                             <a href="{% url '_insertdatabase' %}"><button class="right"><b>Add Database </b></button>
+                             <a href="{% url '_insertdatabase' %}"><button class="pull-right"><b>Add Database </b></button>
                              </a>
                          </h5>
                      </b>
-                    </span>
+                   
              </nav>
-
+             <div class="wrapper wrapper-content">
+        
+                <h3>Databases</h3>
+             
+            </div>
              
 
              <table class="center table table-hover">
@@ -219,5 +217,7 @@
 
 
              });
+
+             
          </script>
  </body>

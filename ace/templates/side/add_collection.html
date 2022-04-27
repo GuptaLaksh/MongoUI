@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    <div class="wrapper">
+    <div class="wrapper container">
         <header>
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
         
@@ -46,7 +46,7 @@
                     
                 </div>
 
-        <hr>
+        
     
      
         <form enctype="multipart/form-data" method="post" action="">
@@ -65,7 +65,7 @@
             <div class="form-group">
                 {{ form.myfile }}
             </div>
-
+<!--
             <div class="wrapper wrapper-content animated fadeIn">
                 <div class="row">
                     <div class="col-lg-6">
@@ -84,7 +84,7 @@
                 </div>
             </div>
             
-
+-->
             <hr>
             {% if e is not None %}
             <div style="color:black;">
