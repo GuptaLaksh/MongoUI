@@ -32,9 +32,9 @@
         <h5 class="username">Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!</h5>
       </span>
       <span class="greetings" style="margin-right:20px;">
-        <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
-            Admin</button></a>
-      </span>
+        <a href="{% url 'userspage' %}"><button class="btn btn-warning btn-large pull-left"><i class="fa fa-users" aria-hidden="true"></i>
+                Users</button></a>
+    </span>
     </header>
     <hr>
     <nav>
@@ -451,6 +451,9 @@
           }
         });
 
+
+
+
         var el = document.getElementsByName("csrfmiddlewaretoken");
         csrf_value = el[0].getAttribute("value");
         $('#hidbutton').on('click', function () {
@@ -488,17 +491,26 @@
       });
     </script>
     <script>
-      $(document).ready(function () {
-
-        $("#source").change(function () {
-
-          var el = $(this);
-
-          var name = el.val();
-
-          $("#status").text("{% for item in scroll_list.db %}<li><option>item</option></li>{% endfor %})")
-
-        })
-      });
+      $('.newdel').on('click', function () {
+        var id = $(this).id
+        $.ajax({
+          type: 'POST',
+          url: "{% url '_deletedocument' db=db collection=collection pk=1 %}".replace("1",id),
+          data: {
+            'id':id,
+            csrfmiddlewaretoken: csrf_value
+          },
+        });
+        swal("Deleted!", "Your file/s has/ve been deleted.", "success");
+        location.reload();
+      } else {
+        swal("Cancelled", "Your file/s is/are safe :)", "error");
+        location.reload();
+      }
+    });
+      }
     </script>
+
+
+   
 </body>

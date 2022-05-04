@@ -30,9 +30,9 @@
 
                  </span>
                  <span class="greetings" style="margin-right:20px;">
-                     <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
-                             Admin</button></a>
-                 </span>
+                    <a href="{% url 'userspage' %}"><button class="btn btn-warning btn-large pull-left"><i class="fa fa-users" aria-hidden="true"></i>
+                            Users</button></a>
+                </span>
 
              </header>
              <hr>
@@ -92,7 +92,7 @@
 
                                  </button></a>
                          </td>
-                         <input type="hidden" id="Url" data-url="{% url '_deletedatabase' db=dbname.name %}" />
+                         
                          {% if dbname.name in primelist %}
                          
                          <td class="prime">
@@ -108,7 +108,7 @@
                          {% else %}
                          <td class="prime">
 
-                             <button type="button" class="btn btn-outline-danger btn-sm demo4">
+                             <button type="button" class="btn btn-outline-danger btn-sm demo4" id="{{dbname.name}}">
                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-trash-fill" viewBox="0 0 16 16">
                                      <path
@@ -193,26 +193,28 @@
                  });
 
                  $('.demo4').click(function () {
-                     swal({
-                             title: "Are you sure?",
-                             text: "Your will not be able to recover this file!",
-                             type: "warning",
-                             showCancelButton: true,
-                             confirmButtonColor: "#DD6B55",
-                             confirmButtonText: "Yes, delete it!",
-                             cancelButtonText: "No, cancel plx!",
-                             closeOnConfirm: false,
-                             closeOnCancel: false
-                         },
-                         function (isConfirm) {
-                             if (isConfirm) {
-                                 var url = $("#Url").attr("data-url");
-                                 document.location.href = url
-                                 swal("Deleted!", "Your file has been deleted.", "success");
-                             } else {
-                                 swal("Cancelled", "Your file is safe :)", "error");
-                             }
-                         });
+                    var db = $(this).attr('id');
+                    swal({
+                        title: "Are you sure?",
+                        text: "Your will not be able to recover the " + db +" database!",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                      },
+                      function (isConfirm) {
+                        if (isConfirm) {
+                          var url = "{% url '_deletedatabase' db=1 %}".replace('1', db);
+                          document.location.href = url;
+                          swal("Deleted!", "Your file has been deleted.", "success");
+                        } else {
+                          swal("Cancelled", "Your file is safe :)", "error");
+                        }
+                      });
+                  
                  });
 
 

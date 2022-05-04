@@ -33,7 +33,7 @@
 
 
 <body>
-    <div class="container">
+    <div class="wrapper">
 
         <header>
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
@@ -101,7 +101,7 @@
             {% endif %}
             <hr>
             <div class="form-group">
-                <h4>{{ form.dictionary }}</h4>
+                {{ form.dictionary }}
             </div>
 
 

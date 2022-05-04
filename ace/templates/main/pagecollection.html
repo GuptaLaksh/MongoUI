@@ -35,9 +35,9 @@
 
         </span>
         <span class="greetings" style="margin-right:20px;">
-          <a href="{% url 'adminpage' %}"><button class="btn btn-warning btn-large pull-left">
-              Admin</button></a>
-        </span>
+          <a href="{% url 'userspage' %}"><button class="btn btn-warning btn-large pull-left"><i class="fa fa-users" aria-hidden="true"></i>
+                  Users</button></a>
+      </span>
 
       </header>
       <hr>
@@ -134,7 +134,7 @@
                   {% else %}
                   <td class="prime">
 
-                    <button type="button" class="btn btn-outline-danger btn-sm demo4" id="remove">
+                    <button type="button" class="btn btn-outline-danger btn-sm demo4" id="{{dict.name}}">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-trash-fill" viewBox="0 0 16 16">
                         <path
@@ -248,9 +248,10 @@
       });
 
       $('.demo4').click(function () {
+        var col = $(this).attr('id');
         swal({
             title: "Are you sure?",
-            text: "Your will not be able to recover this file!",
+            text: "Your will not be able to recover the " + col + "collection!",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
@@ -261,14 +262,16 @@
           },
           function (isConfirm) {
             if (isConfirm) {
-              var url = $("#Url").attr("data-url");
-              document.location.href = url
+              var url = "{% url '_deletecollection' db=db collection=1 %}".replace('1', col);
+              document.location.href = url;
               swal("Deleted!", "Your file has been deleted.", "success");
             } else {
               swal("Cancelled", "Your file is safe :)", "error");
             }
           });
-      });
+      
+     });
+
 
 
     });

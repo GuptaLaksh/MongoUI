@@ -28,7 +28,7 @@
 
 
 <body>
-    <div class="container">
+    <div class="wrapper">
         <header>
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
         
@@ -55,7 +55,7 @@
     <div>
         
             
-          <b><h4><textarea readonly id="editor" rows="10" cols="96">{{jsontext}}</textarea></h4></b>
+        <b><textarea readonly id="editor" rows="15" cols="171">{{jsontext}}</textarea></b>
           
       </form>
 

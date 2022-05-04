@@ -5,20 +5,31 @@ class DatabaseForm(forms.Form):
     databaseName = forms.CharField(label='DatabaseName', max_length=100)
     collectionName = forms.CharField(label='CollectionName', max_length=100)
     dictionary = forms.CharField(
-        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}), required=False)
+        label='Dictionary', widget=forms.Textarea(attrs={"rows": 15, "cols": 169, "wrap": "hard"}), required=False)
     myfile = forms.FileField(label='myfile', required=False)
+
+    def save(self, commit=True):
+        ...
+        # check if text_file contains content
+        text_file_data = self.cleaned_data.get("myfile")
+        ...
+        if text_file_data:
+            # self.instance is instance of "Post" model
+            self.instance.dictionary = text_file_data
+        ...
+        return super().save(commit)
 
 
 class CollectionForm(forms.Form):
     collectionName = forms.CharField(label='CollectionName', max_length=100)
     dictionary = forms.CharField(
-        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}), required=False)
+        label='Dictionary', widget=forms.Textarea(attrs={"rows": 15, "cols": 169, "wrap": "hard"}), required=False)
     myfile = forms.FileField(label='myfile', required=False)
 
 
 class DocumentForm(forms.Form):
     dictionary = forms.CharField(
-        label='Dictionary', widget=forms.Textarea(attrs={"rows": 10, "cols": 96, "wrap": "hard"}), required=False
+        label='Dictionary', widget=forms.Textarea(attrs={"rows": 15, "cols": 169, "wrap": "hard"}), required=False
     )
     myfile = forms.FileField(label='myfile', required=False)
 
@@ -55,7 +66,9 @@ ROLES = [('readWrite', 'readWrite'), ('read', 'read')]
 
 
 class newUserForm(forms.Form):
-    newUser = forms.CharField(label='newUser', max_length=100)
-    pwd = forms.CharField(label='pwd', max_length=100)
+    newUser = forms.CharField(
+        label='newUser', max_length=100)
+    pwd = forms.CharField(widget=forms.PasswordInput(),
+                          label='pwd', max_length=100)
     role = forms.CharField(label='role',
                            widget=forms.Select(choices=ROLES))

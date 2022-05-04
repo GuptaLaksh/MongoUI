@@ -33,6 +33,7 @@ urlpatterns = [
 
 
     path('login/', views.login_request, name="login"),
+    path('userspage/', views.userlist_page_request, name="userspage"),
     path('adminpage/', views.admin_page_request, name="adminpage"),
 
     path('', views.showdbs, name="showdbs"),

@@ -50,6 +50,43 @@ def logout_request(request):
 
 
 @login_required
+def userlist_page_request(request):
+
+    user = request.session.get('user')
+    print(user)
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
+    dblist = []
+
+    for dbx in clientInstance.list_databases():
+        dblist.append(dbx['name'])
+
+    userlist = []
+
+    userinfo = clientInstance['admin'].command('usersInfo')
+
+    users = userinfo['users']
+
+    idlist = []
+    for identity in users:
+        name = identity['user']
+        roles = identity['roles']
+        idlist.append((name, roles))
+
+        print(name, identity['roles'])
+
+    # print(clientInstance['admin'].command('usersInfo'))
+
+    context = {"userlist": userlist, "dbs": clientInstance.list_databases(),
+               "current_user": user, "idlist": idlist}
+    # print(userlist)
+
+    return render(request, "main/admin/admin_userlist.html", context)
+
+
+@login_required
 def admin_page_request(request):
 
     user = request.session.get('user')
@@ -320,11 +357,16 @@ def _deletedatabase(request, db):
     if user is None:
         return redirect('login')
     clientInstance = clientpool[user]
-    try:
-        clientInstance.drop_database(db)
-    except errors.OperationFailure:
-        messages.warning("You don't have authorized permissions!")
-        return redirect('showdbs')
+
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
+    if db not in primelist:
+        try:
+            clientInstance.drop_database(db)
+        except errors.OperationFailure:
+            messages.warning("You don't have authorized permissions!")
+            return redirect('showdbs')
 
     return redirect('showdbs')
 
@@ -378,6 +420,7 @@ def _insertdatabase(request):
                 if 'myfile' in request.FILES:
                     myfile = request.FILES['myfile']
                     contentfile = json.load(myfile)
+                    form.save()
                     try:
                         collection.insert_one(contentfile)
                     except:
