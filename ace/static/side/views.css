@@ -15,6 +15,10 @@ body {
     margin: auto;
 }
 
+.greetings a {
+    color: black;
+}
+
 #editor {
     cursor: default;
 }

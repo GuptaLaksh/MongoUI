@@ -35,11 +35,12 @@
             <a href="{% url 'showdbs' %}"><img class="logo" src="{% static 'images/microbots.png' %}"></a>
 
 
-            <span class="greetings"><a href="{% url 'logout' %}"><button class="w-100 btn btn-outline-dark">
-                        <h5>Log Out</h5>
-                    </button></a></span>
+            <span class="greetings"><a href="{% url 'logout' %}">
+                <i class="fa fa-sign-out"></i> Log out
+            </a>
+        </span>
             <span class="greetings">
-                <h5 class="username">Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!</h5>
+                Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!
             </span>
         </header>
 

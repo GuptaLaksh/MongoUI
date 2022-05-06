@@ -1,3 +1,10 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 15px;
+}
+
 .headcol {
     position: sticky;
     left: 0;

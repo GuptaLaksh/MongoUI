@@ -8,17 +8,6 @@ class DatabaseForm(forms.Form):
         label='Dictionary', widget=forms.Textarea(attrs={"rows": 15, "cols": 169, "wrap": "hard"}), required=False)
     myfile = forms.FileField(label='myfile', required=False)
 
-    def save(self, commit=True):
-        ...
-        # check if text_file contains content
-        text_file_data = self.cleaned_data.get("myfile")
-        ...
-        if text_file_data:
-            # self.instance is instance of "Post" model
-            self.instance.dictionary = text_file_data
-        ...
-        return super().save(commit)
-
 
 class CollectionForm(forms.Form):
     collectionName = forms.CharField(label='CollectionName', max_length=100)

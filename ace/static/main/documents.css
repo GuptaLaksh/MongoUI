@@ -1,3 +1,10 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 15px;
+}
+
 .headcol {
     position: sticky;
     left: 0;
@@ -209,12 +216,6 @@ td.prime {
 
 .greetings button {
     padding: 2px 2px 0px 0px;
-}
-
-.username {
-    margin-top: 5px;
-    margin-bottom: 0;
-    margin-right: 5px;
 }
 
 .prime button a {

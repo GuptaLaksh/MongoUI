@@ -1,3 +1,10 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 15px;
+}
+
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -38,12 +45,6 @@ td.prime {
     padding: 2px 2px 0px 0px;
 }
 
-.username {
-    margin-top: 5px;
-    margin-bottom: 0;
-    margin-right: 5px;
-}
-
 .prime button a {
     text-decoration: none;
     color: white;
@@ -63,7 +64,7 @@ ul li {
 
 li ul {
     position: absolute;
-    left: 200px;
+    left: 210px;
     top: 0;
     display: none;
 }
@@ -82,7 +83,7 @@ ul {
     margin: 0;
     padding: 0;
     list-style: none;
-    width: 200px;
+    width: 210px;
     border-bottom: 1px solid #ccc;
 }
 

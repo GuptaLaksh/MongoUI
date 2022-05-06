@@ -1,3 +1,10 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 15px;
+}
+
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -32,16 +39,6 @@ tr:nth-child(even) {
 th.prime,
 td.prime {
     text-align: center;
-}
-
-.greetings button {
-    padding: 2px 2px 0px 0px;
-}
-
-.username {
-    margin-top: 5px;
-    margin-bottom: 0;
-    margin-right: 5px;
 }
 
 .prime button a {
@@ -53,10 +50,6 @@ td.prime {
     float: right;
 }
 
-a {
-    text-decoration: none;
-}
-
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -74,20 +67,6 @@ tr:nth-child(even) {
     background-color: #dddddd;
 }
 
-.greetings {
-    float: right;
-    margin: auto;
-}
-
-.greetings a {
-    color: black;
-}
-
-.logo {
-    width: 210px;
-    margin-bottom: auto;
-}
-
 th.prime,
 td.prime {
     text-align: center;
@@ -95,12 +74,6 @@ td.prime {
 
 .greetings button {
     padding: 2px 2px 0px 0px;
-}
-
-.username {
-    margin-top: 5px;
-    margin-bottom: 0;
-    margin-right: 5px;
 }
 
 .prime button a {
