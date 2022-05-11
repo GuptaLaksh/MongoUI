@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from platform import python_branch
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
@@ -49,14 +50,52 @@ def logout_request(request):
     return redirect('uilogin')
 
 
+'''
 @login_required
-def userlist_page_request(request):
+def _deleteuser(request, username):
 
     user = request.session.get('user')
     print(user)
     if user is None:
         return redirect('login')
     clientInstance = clientpool[user]
+
+    primelist = ['micro_admin_user', 'micro_user', 'micro_usertest',
+                 'ml_svc_mbad', 'ml_svc_mbap', 'ml_svc_mbcf', 'ml_svc_mbrt']
+
+    if username not in primelist:
+        try:
+            print(username)
+            #clientInstance.admin.command("dropUser", username)
+        except errors.OperationFailure:
+            pass
+
+    return redirect('userspage')
+'''
+
+
+@login_required
+def userlist_request(request):
+
+    user = request.session.get('user')
+
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
+    primelist = ['micro_admin_user', 'micro_user', 'micro_usertest',
+                 'ml_svc_mbad', 'ml_svc_mbap', 'ml_svc_mbcf', 'ml_svc_mbrt']
+
+    if request.method == "POST":
+
+        if 'username' in request.POST:
+
+            username = request.POST.get('username')
+            print(request.POST)
+            if username not in primelist:
+                print(username)
+                clientInstance.admin.command("dropUser", username)
+                return redirect('userspage')
 
     dblist = []
 
@@ -65,7 +104,11 @@ def userlist_page_request(request):
 
     userlist = []
 
-    userinfo = clientInstance['admin'].command('usersInfo')
+    try:
+        userinfo = clientInstance['admin'].command('usersInfo')
+    except errors.OperationFailure:
+
+        return redirect('showdbs')
 
     users = userinfo['users']
 
@@ -75,7 +118,7 @@ def userlist_page_request(request):
         roles = identity['roles']
         idlist.append((name, roles))
 
-        print(name, identity['roles'])
+        #print(name, identity['roles'])
 
     # print(clientInstance['admin'].command('usersInfo'))
 
@@ -83,11 +126,79 @@ def userlist_page_request(request):
                "current_user": user, "idlist": idlist}
     # print(userlist)
 
-    return render(request, "main/admin/admin_userlist.html", context)
+    return render(request, "main/admin/userslist.html", context)
 
 
 @login_required
-def admin_page_request(request):
+def useredit_request(request, username):
+
+    user = request.session.get('user')
+
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
+    userinfo = clientInstance['admin'].command('usersInfo')
+
+    users = userinfo['users']
+
+    idlist = {}
+    for identity in users:
+        name = identity['user']
+        roles = identity['roles']
+        idlist[name] = roles
+
+    dblist = []
+
+    for dbx in clientInstance.list_databases():
+        dblist.append(dbx['name'])
+
+    print("idlist:", idlist)
+    rolesss = idlist[username]
+
+    selected = {}
+
+    for db in dblist:
+        selected[db] = []
+
+    for rol in rolesss:
+        if rol['db'] in selected.keys():
+            selected[rol['db']].append(rol['role'])
+
+    print("selected:", selected)
+
+    if request.method == 'POST':
+
+        dbs = clientInstance.list_databases()
+
+        roles = []
+        for db in dbs:
+            db_name = db['name']
+            name = 'readWrite-'+str(db_name)
+            name1 = 'read-'+str(db_name)
+            name2 = 'dbAdmin-'+str(db_name)
+            type = request.POST.get(name)
+            type1 = request.POST.get(name1)
+            type2 = request.POST.get(name2)
+
+            if type == 'on':
+                roles.append({'role': 'readWrite', 'db': db_name})
+            if type1 == 'on':
+                roles.append({'role': 'read', 'db': db_name})
+            if type2 == 'on':
+                roles.append({'role': 'dbAdmin', 'db': db_name})
+
+        clientInstance.admin.command("updateUser", username, roles=roles)
+
+        return redirect('userspage')
+
+    context = {"dbs": dblist,
+               "current_user": user, "username": username, "selected": selected}
+    return render(request, "main/admin/user_edit.html", context=context)
+
+
+@login_required
+def create_user_request(request):
 
     user = request.session.get('user')
     print(user)
@@ -103,6 +214,7 @@ def admin_page_request(request):
 
     print(request.POST)
     if request.method == 'POST':
+
         newUser = request.POST.get('newUser')
         pwd = request.POST.get('pwd')
 
@@ -111,14 +223,20 @@ def admin_page_request(request):
         roles = []
         for db in dbs:
             db_name = db['name']
-            name = 'ReadWrite-'+str(db_name)
-            name1 = 'Read-'+str(db_name)
+            name = 'readWrite-'+str(db_name)
+            name1 = 'read-'+str(db_name)
+            name2 = 'dbAdmin-'+str(db_name)
             type = request.POST.get(name)
             type1 = request.POST.get(name1)
+            type2 = request.POST.get(name2)
             if type == 'on':
                 roles.append({'role': 'readWrite', 'db': db_name})
-            elif type1 == 'on':
+
+            if type1 == 'on':
                 roles.append({'role': 'read', 'db': db_name})
+
+            if type2 == 'on':
+                roles.append({'role': 'dbAdmin', 'db': db_name})
 
         clientInstance.admin.command(
             'createUser', newUser,
@@ -126,11 +244,11 @@ def admin_page_request(request):
             roles=roles
         )
 
-        return redirect('showdbs')
+        return redirect('userspage')
 
     context = {"dbs": clientInstance.list_databases(), "form": form,
                "current_user": user}
-    return render(request, "main/admin/adminpage.html", context=context)
+    return render(request, "main/admin/create_user.html", context=context)
 
 
 @login_required
@@ -175,6 +293,17 @@ def showdbs(request):
 
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
+    if request.method == "POST":
+
+        db = request.POST.get('db')
+        if db not in primelist:
+            try:
+                clientInstance.drop_database(db)
+            except errors.OperationFailure:
+                messages.warning("You don't have authorized permissions!")
+                return redirect('showdbs')
+
     context = {"baseHref": baseHref, "dbs": clientInstance.list_databases(
     ), "primelist": primelist, "current_user": user}
     return render(request, "main/database.html", context=context)
@@ -190,6 +319,21 @@ def showCollections(request, db):
     tuplist = []
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
+    if request.method == "POST":
+
+        if 'collection' in request.POST:
+
+            if db not in primelist:
+
+                collection = request.POST.get('collection')
+
+                try:
+                    clientInstance[db].drop_collection(collection)
+                except errors.OperationFailure:
+                    messages.warning("You don't have authorized permissions!")
+                    return redirect('showcollections', db=db)
+
     for collection in clientInstance[db].list_collection_names():
         collectionlist.append((collection, clientInstance[db][collection]))
 
@@ -219,9 +363,9 @@ def showdocs(request, db, collection):
 
     for dbx in clientInstance.list_databases():
         dblist.append(dbx['name'])
-        print(dbx)
+        # print(dbx)
 
-    print(dblist)
+    # print(dblist)
 
     for dbx in dblist:
         scroll_list.append(
@@ -235,7 +379,47 @@ def showdocs(request, db, collection):
     print(request.POST)
     if request.method == 'POST':
 
+        if 'ids[]' in request.POST:
+
+            ids = request.POST.getlist('ids[]')
+
+            queries = []
+
+            for id in ids:
+                try:
+                    query = {"_id": ObjectId(id)}
+                except InvalidId:
+                    query = {"_id": (id)}
+
+                queries.append(query)
+
+            for query in queries:
+                collections.find_one_and_delete(query)
+                print("multidelete")
+
+            return redirect('showdocs', db=db, collection=collection)
+
+    if request.method == 'POST':
+
+        if 'id' in request.POST:
+
+            id = request.POST.get('id')
+            try:
+                query = {"_id": ObjectId(id)}
+            except InvalidId:
+                query = {"_id": (id)}
+
+            # print(query)
+
+            try:
+                collections.find_one_and_delete(query)
+            except errors.OperationFailure:
+                return redirect('showdocs', db=db, collection=collection)
+
+    if request.method == 'POST':
+
         if form.is_valid():
+
             if 'export' in request.POST:
 
                 formatoptions = form.cleaned_data.get('options')
@@ -251,7 +435,7 @@ def showdocs(request, db, collection):
                 elif query != "":
                     if projection == "":
                         val = "" + str(query) + ""
-                        print(val)
+                        # print(val)
                         documents = collections.find(json.loads(val))
                     else:
                         documents = collections.find(
@@ -261,7 +445,7 @@ def showdocs(request, db, collection):
                 for document in documents:
                     mongo_docs.append(document)
 
-                print(mongo_docs)
+                # print(mongo_docs)
 
                 if formatoptions == "csv":
                     response = HttpResponse(content_type='text/csv')
@@ -287,6 +471,7 @@ def showdocs(request, db, collection):
                     return response
 
             elif 'find' in request.POST:
+
                 key = form.cleaned_data.get('key')
                 value = form.cleaned_data.get('value')
                 query = form.cleaned_data.get('query')
@@ -299,7 +484,7 @@ def showdocs(request, db, collection):
                 elif query != "":
                     if projection == "":
                         val = "" + str(query) + ""
-                        print(val)
+                        # print(val)
                         documents = collections.find(json.loads(val))
                     else:
                         documents = collections.find(
@@ -351,6 +536,7 @@ def showdocs(request, db, collection):
     return render(request, "main/documents.html", context=context)
 
 
+'''
 @login_required
 def _deletedatabase(request, db):
     user = request.session.get('user')
@@ -369,6 +555,7 @@ def _deletedatabase(request, db):
             return redirect('showdbs')
 
     return redirect('showdbs')
+'''
 
 
 @login_required
@@ -431,7 +618,10 @@ def _insertdatabase(request):
                 elif dictionary != "":
                     try:
                         json.loads(dictionary)
-                        collection.insert_one(json.loads(dictionary))
+                        try:
+                            collection.insert_one(json.loads(dictionary))
+                        except errors.OperationFailure:
+                            return redirect('showdbs')
                         url = reverse_lazy('showdbs')
                         return HttpResponseRedirect(url)
                     except ValueError as ex:
@@ -460,6 +650,7 @@ def _renamedatabase(request, db):
     return redirect('showdbs')
 
 
+'''
 @login_required
 def _deletecollection(request, db, collection):
     user = request.session.get('user')
@@ -473,6 +664,7 @@ def _deletecollection(request, db, collection):
         return redirect('showcollections', db=db)
 
     return redirect('showcollections', db=db)
+'''
 
 
 @login_required
@@ -557,6 +749,7 @@ def _renamecollection(request, db, collection):
     return redirect('showcollections', db=db)
 
 
+'''
 @login_required
 def _deletedocument(request, db, collection, pk):
     print(request.POST)
@@ -582,6 +775,7 @@ def _deletedocument(request, db, collection, pk):
         return redirect('showdocs', db=db, collection=collection)
 
     return redirect('showdocs', db=db, collection=collection)
+'''
 
 
 def _deletemultidocument(request, db, collection):
@@ -610,14 +804,6 @@ def _deletemultidocument(request, db, collection):
             print("multidelete")
 
         return redirect('showdocs', db=db, collection=collection)
-
-    '''
-    try:
-        collections.find_one_and_delete(query)
-    except errors.OperationFailure:
-        messages.warning("You don't have access")
-        return redirect('showdocs', db=db, collection=collection)
-    '''
 
     return redirect('showdocs', db=db, collection=collection)
 

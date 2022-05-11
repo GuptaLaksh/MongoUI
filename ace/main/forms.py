@@ -58,6 +58,6 @@ class newUserForm(forms.Form):
     newUser = forms.CharField(
         label='newUser', max_length=100)
     pwd = forms.CharField(widget=forms.PasswordInput(),
-                          label='pwd', max_length=100)
+                          label='pwd', min_length=8, max_length=100)
     role = forms.CharField(label='role',
                            widget=forms.Select(choices=ROLES))

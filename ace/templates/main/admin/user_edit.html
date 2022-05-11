@@ -19,7 +19,7 @@
 
  
 
-    <title>Mongo | Admin</title>
+    <title>Mongo | Users </title>
 
 </head>
 
@@ -37,13 +37,13 @@
                 <i class="fa fa-sign-out"></i> Log out
             </a>
         </span>
-            <span class="greetings">
+            <span class="greetings" style="margin-right:20px;">
                 Hi <b><span style="color: dodgerblue;">{{current_user}}</span></b>!
             </span>
             
             <span class="greetings" style="margin-right:20px;">
                 <a href="{% url 'showdbs' %}"><button class="btn btn-success btn-large pull-left">
-                    View Site</button></a>        
+                    Home</button></a>        
             </span>
         </header>
 
@@ -53,21 +53,16 @@
             <svg width="18px" height="18px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Pro 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
             </button></a>
 
-        
+           
     
         
         <form enctype="multipart/form-data" method="post" action="">
             {% csrf_token %}
             
-            <h2>CREATE USER</h2>
+            <h2>USER_EDIT - {{username}}</h2>
             <hr>
             <div>
 
-                <span class="form-group">User :   {{ form.newUser }}</span>
-            
-                <span class="form-group">Password : {{ form.pwd }}</span>
-                
-                
                 
 
                 <div id="checkboxes" >
@@ -88,24 +83,45 @@
                                         <thead>
                                           <tr>
                                         <th>Databases</th>
-                                        <th>Read</th>
-                                        <th>ReadWrite  </th>
+                                        <th>read</th>
+                                        <th>readWrite  </th>
+                                        <th>dbAdmin</th>
                                     </tr>
                                         </thead>
                                         <tbody>
-                                            {% for db in dbs %}
-                                            <tr>
+                                        {% for db,value in selected.items %}
+                                        <tr>
                                         <td>
-                                            {{db.name}}
+                                            {{db}}
                                         </td>
-                                        <td>
-                                            <input type="checkbox" name="Read-{{db.name}}" class="point form-control">
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" name="ReadWrite-{{db.name}}" class="point form-control">
-                                        </td>
-                                    </tr>
                                         
+                                        <td>
+                                            {% if "read" in value %}
+                                                <input type="checkbox" name="read-{{db}}" class="point" checked>
+                                            {% else %}
+                                                <input type="checkbox"  name="read-{{db}}" class="point">
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if "readWrite" in value %}
+                                                <input type="checkbox" name="readWrite-{{db}}" class="point" checked>
+                                            {% else %}
+                                                <input type="checkbox" name="readWrite-{{db}}" class="point">
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if "dbAdmin" in value %}
+                                                <input type="checkbox"  name="dbAdmin-{{db}}" class="point" checked>
+                                            {% else %}
+                                                <input type="checkbox"  name="dbAdmin-{{db}}" class="point">
+                                            {% endif %}
+                                        </td>
+                                        
+                                        
+
+                                        
+                                    </tr>
+                                    
                                     {% endfor %}  
                 
                                         </tbody>
@@ -114,7 +130,7 @@
                             </div>
                             <hr>
                             <span class="form-group">
-                                <input type="submit" name="action" value="CreateUser" class="btn btn-primary btn-large pull-right form-control">
+                                <input type="submit" name="action" value="UpdateUser" class="btn btn-primary btn-large pull-right form-control">
                             </span>  
                             <hr>
                         </div>
@@ -168,7 +184,24 @@
 <!-- Peity -->
 <script src="{% static 'js/demo/peity-demo.js' %} "></script>
 
+
+
 <script>
+    $("input:checkbox").on('click', function() {
+        // in the handler, 'this' refers to the box clicked on
+        var $box = $(this);
+        if ($box.is(":checked")) {
+          // the name of the box is retrieved using the .attr() method
+          // as it is assumed and expected to be immutable
+          var group = "input:checkbox[id='" + $box.attr("id") + "']";
+          // the checked state of the group/box on the other hand will change
+          // and the current value is retrieved using .prop() method
+          $(group).prop("checked", false);
+          $box.prop("checked", true);
+        } else {
+          $box.prop("checked", false);
+        }
+      });
     $(document).ready(function () {
         $('.i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
@@ -176,21 +209,18 @@
         });
     });
 </script>
-<script>
-    $('.demo3').click(function () {
-        swal({
-            title: "Are you sure?",
-            text: "You will not be able to recover this imaginary file!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Yes, delete it!",
-            closeOnConfirm: false
-        }, function () {
-            swal("Deleted!", "Your imaginary file has been deleted.", "success");
-        });
-    });
-</script>
+
 </body>
+
+
+<footer class="text-center text-lg-start bg-light text-muted">
+  
+    <small>Microbots Mongo UI </small>
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+      &copy;  2022 Copyright:
+      <a class="text-reset fw-bold" href="https://www.microland.com/">Microland</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
 
 </html>

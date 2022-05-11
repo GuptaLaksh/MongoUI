@@ -9,16 +9,19 @@ from main.views import (
     showCollections,
     showdocs,
 
-    _deletedatabase,
+
     _insertdatabase,
     _renamedatabase,
 
-    _deletecollection,
+
     _insertcollection,
     _renamecollection,
 
+    userlist_request,
+    create_user_request,
+    useredit_request,
 
-    _deletedocument,
+
     _deletemultidocument,
     _viewdocument,
     _editdocument,
@@ -33,30 +36,30 @@ urlpatterns = [
 
 
     path('login/', views.login_request, name="login"),
-    path('userspage/', views.userlist_page_request, name="userspage"),
-    path('adminpage/', views.admin_page_request, name="adminpage"),
+    path('users/', views.userlist_request, name="userspage"),
+    path('users/createuser/', views.create_user_request, name="usercreation"),
+    path('users/<username>/', views.useredit_request, name="user_edit"),
+    #path('users/<username>/deleteuser', views._deleteuser, name="user_del"),
+
 
     path('', views.showdbs, name="showdbs"),
     path('db/<db>/', views.showCollections, name="showcollections"),
     path('db/<db>/<collection>/', views.showdocs, name="showdocs"),
 
 
-    path('db/<db>/deletedatabase',
-         views._deletedatabase, name='_deletedatabase'),
+    #path('db/<db>/deletedatabase',views._deletedatabase, name='_deletedatabase'),
     path('db/<db>/renamedatabase',
          views._renamedatabase, name='_renamedatabase'),
     path('db/insertdatabase',
          views._insertdatabase, name='_insertdatabase'),
 
-    path('db/<db>/<collection>/deletecollection',
-         views._deletecollection, name='_deletecollection'),
+    #path('db/<db>/<collection>/deletecollection',views._deletecollection, name='_deletecollection'),
     path('db/<db>/insertcollection',
          views._insertcollection, name='_insertcollection'),
     path('db/<db>/<collection>/renamecollection',
          views._renamecollection, name='_renamecollection'),
 
-    path('db/<db>/<collection>/<pk>/deletedocument/',
-         views._deletedocument, name='_deletedocument'),
+    #path('db/<db>/<collection>/<pk>/deletedocument/',views._deletedocument, name='_deletedocument'),
     path('db/<db>/<collection>/deletemultidocument/',
          views._deletemultidocument, name='_deletemultidocument'),
 
