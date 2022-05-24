@@ -68,7 +68,10 @@
 
             <div class="form-group">
                 {{ form.myfile }}
+                <input type="submit" name="action" value="Preview" class="btn btn-success btn-large pull-right">
             </div>
+            
+
 
             <!--
             <div class="wrapper wrapper-content animated fadeIn">
@@ -98,9 +101,8 @@
             </div>
 
             <div>
-                <input type="submit" name="action" value="Validate" class=" btn btn-danger btn-large pull-right">
+                <input type="submit" name="action" value="Validate" class=" btn btn-danger btn-large">
                 <input type="submit" name="action" value="Insert" class=" btn btn-primary btn-large pull-right">
-                <input type="submit" name="action" value="Preview" class="btn btn-primary btn-large pull-right">
             </div>
 
 
@@ -112,7 +114,7 @@
     </div>
 
     
-    <!-- Mainly s<!-- Mainly scripts -->
+    <!-- Mainly scripts -->
     <script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
     <script src="{% static 'js/popper.min.js' %} "></script>
     <script src="{% static 'js/bootstrap.js' %} "></script>
@@ -130,47 +132,8 @@
     <script src="{% static 'js/plugins/dropzone/dropzone.js' %} "></script>
     
 
-    <!-- CodeMirror -->
-    <script src="{% static 'js/plugins/codemirror/codemirror.js' %} "></script>
-    <script src="{% static 'js/plugins/codemirror/mode/xml/xml.js' %} "></script>
+  
 
-    <script>
-        Dropzone.options.dropzoneForm = {
-            paramName: "file", // The name that will be used to transfer the file
-            maxFilesize: 2, // MB
-            dictDefaultMessage: "<strong>Drop files here or click to upload. </strong></br> (This is just a demo dropzone. Selected files are not actually uploaded.)"
-        };
-
-        $(document).ready(function(){
-
-            var editor_one = CodeMirror.fromTextArea(document.getElementById("code1"), {
-                lineNumbers: true,
-                matchBrackets: true
-            });
-
-            var editor_two = CodeMirror.fromTextArea(document.getElementById("code2"), {
-                lineNumbers: true,
-                matchBrackets: true
-            });
-
-            var editor_two = CodeMirror.fromTextArea(document.getElementById("code3"), {
-                lineNumbers: true,
-                matchBrackets: true
-            });
-
-            var editor_two = CodeMirror.fromTextArea(document.getElementById("code4"), {
-                lineNumbers: true,
-                matchBrackets: true
-            });
-
-
-            $('.custom-file-input').on('change', function() {
-                let fileName = $(this).val().split('\\').pop();
-                $(this).next('.custom-file-label').addClass("selected").html(fileName);
-            });
-
-       });
-    </script>
 
 
 
@@ -178,7 +141,7 @@
 </body>
 <footer class="text-center text-lg-start bg-light text-muted">
   
-    <small>Microbots Mongo UI </small>
+    <small>Microbots UI </small>
     <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
       &copy;  2022 Copyright:
       <a class="text-reset fw-bold" href="https://www.microland.com/">Microland</a>

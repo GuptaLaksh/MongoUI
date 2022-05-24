@@ -66,8 +66,7 @@
       <div>
         <a href="{% url '_insertdocument' db=db collection=collection %}"><button class="btn btn-outline-dark pull-right"><b>Insert
               Document</b></button></a>
-        <a href="{% url '_insertdocumentBulk' db=db collection=collection %}"><button class="btn btn-outline-dark pull-right" style="margin-right:10px;"><b>Bulk Insert
-              Documents</b></button></a>
+        
     <div>
 
       <div>
@@ -81,39 +80,73 @@
 
 
     <div>
-      <form action="" method="post">
+      
+      <form action="" method="post" enctype="multipart/form-data" >
         {% csrf_token %}
+     
+        {{form.key}}{{form.value}}
+        
+        {% if db == "Microbot_MappingsDB" or db == "Microbot_LookupsDB" %}
+        <select name="customer_id">
+          <option selected="selected" value="" disabled>Customer_ID:</option>
+          {% for cust in custlist %}
+          {% if cust == customer_id %}
+          <option value="{{cust}}" selected="selected">{{cust}}</option>
+          {% else %}
+          <option value="{{cust}}">{{cust}}</option>
+          {% endif %}
+          {% endfor %}
+      </select>
+      {% endif %} 
 
-        {{form.key}} {{form.value}}
-        <button type="submit" class="btn btn-large btn-warning" name="find"><i class="fa fa-search" aria-hidden="true"></i>
-         </button>
-         <a href="{% url 'showdocs' db=db collection=collection%}"><button class = "btn btn-large btn-success" id="clearButton"><i class="fa fa-repeat" aria-hidden="true"></i>
-          </button></a>
+      {% if db == "Microbot_LookupsDB" %}
+      <select name="group">
+        <option selected="selected" disabled>Groups:</option>
+        {% for gr in grouplist %}
+        {% if gr == group %}
+          <option value="{{gr}}" selected="selected">{{gr}}</option>
+          {% else %}
+          <option value="{{gr}}">{{gr}}</option>
 
-        <button class="btn btn-outline-dark" disabled>Advanced <input type="checkbox" class="always point"></button>
+          {% endif %}
+        
+        {% endfor %}
+    </select>
+    
+    {% endif %}
+    <button type="submit" class="btn btn-large btn-warning" name="find" ><i class="fa fa-search" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-large btn-light"><a href="{% url 'showdocs' db=db collection=collection %}" style="text-decoration:None;">Clear</a></button>
+   
+        
+      
+        <button class="btn btn-success" disabled>Advanced <input type="checkbox" class="point always"></button>
         <div id="advance">
-          {{form.query}}{{form.projection}}
+         {{form.query}}{{form.projection}}
         </div>
 
 
         <hr>
+        
+      
 
 
-
-        <span class="pull-right">{{form.options}}
+        <span class="pull-right">
+          
+          {{form.format}}
+        
 
           <button type="submit" class="btn btn-outline-dark"  name="export"><svg width=15 height=15 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
               <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
               <path
                 d="M192 312C192 298.8 202.8 288 216 288H384V160H256c-17.67 0-32-14.33-32-32L224 0H48C21.49 0 0 21.49 0 48v416C0 490.5 21.49 512 48 512h288c26.51 0 48-21.49 48-48v-128H216C202.8 336 192 325.3 192 312zM256 0v128h128L256 0zM568.1 295l-80-80c-9.375-9.375-24.56-9.375-33.94 0s-9.375 24.56 0 33.94L494.1 288H384v48h110.1l-39.03 39.03C450.3 379.7 448 385.8 448 392s2.344 12.28 7.031 16.97c9.375 9.375 24.56 9.375 33.94 0l80-80C578.3 319.6 578.3 304.4 568.1 295z" />
             </svg>
-            Export All Queried Docs </button>
+           </button>
 
         </span>
 
-
-
       </form>
+      
       <button class="btn btn-outline btn-success" id="toggle"><i class="fa fa-trash" aria-hidden="true"></i>
         Delete Many </button>
       <button class="deletemany btn btn-outline btn-danger hidecol newdemo4" id="hidbutton"><i class="fa fa-trash"
@@ -128,7 +161,7 @@
     <div class="wrapper wrapper-content " style="width: 100%;overflow-x: scroll;overflow-y: visible;padding: 0;">
       <div class="wrapper wrapper-content " style="width: 100%;padding: 0;">
         <hr>
-        <h3>Documents  - {{collection}}</h3>
+        <h3>Documents  - {{collection}} ( {{count}} )</h3>
       </div>
 
       <table class="table table-hover">
@@ -454,7 +487,7 @@
 
 <footer class="text-center text-lg-start bg-light text-muted">
   
-        <small>Microbots Mongo UI </small>
+        <small>Microbots UI </small>
         <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
           &copy;  2022 Copyright:
           <a class="text-reset fw-bold" href="https://www.microland.com/">Microland</a>

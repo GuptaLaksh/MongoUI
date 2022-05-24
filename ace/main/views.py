@@ -21,6 +21,7 @@ from pymongo import errors
 import json
 import csv
 from formtools.wizard.views import SessionWizardView
+from django.core.files.storage import FileSystemStorage
 
 
 class ContactWizard(SessionWizardView):
@@ -123,7 +124,7 @@ def userlist_request(request):
     # print(clientInstance['admin'].command('usersInfo'))
 
     context = {"userlist": userlist, "dbs": clientInstance.list_databases(),
-               "current_user": user, "idlist": idlist}
+               "current_user": user, "idlist": idlist, "primelist": primelist}
     # print(userlist)
 
     return render(request, "main/admin/userslist.html", context)
@@ -210,6 +211,9 @@ def create_user_request(request):
     # if not admin:
     #    return redirect('showdbs')
 
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
     form = newUserForm(request.POST or None)
 
     print(request.POST)
@@ -247,7 +251,7 @@ def create_user_request(request):
         return redirect('userspage')
 
     context = {"dbs": clientInstance.list_databases(), "form": form,
-               "current_user": user}
+               "current_user": user, "primelist": primelist}
     return render(request, "main/admin/create_user.html", context=context)
 
 
@@ -357,6 +361,8 @@ def showdocs(request, db, collection):
     collections = get_collection_instance(clientInstance, db, collection)
     primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
                  'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
+    newdblist = ['Microbot_LookupsDB', 'Microbot_MappingsDB']
     dblist = []
 
     scroll_list = []
@@ -372,11 +378,86 @@ def showdocs(request, db, collection):
             (dbx, list(clientInstance[dbx].list_collection_names())))
 
     documents = collections.find({})
+    tuplist1 = []
+
+    for document in documents:
+        tuplist1.append((document['_id'], document))
+
+    # print("tuplist:", tuplist)
+
+    doclist1 = []
+    for id, doc in tuplist1:
+        doclist1.append(doc)
+
+    print("doclist1:", doclist1)
+
+    keylist1 = []
+
+    for doc in doclist1:
+        for key in doc.keys():
+            if key not in keylist1:
+                keylist1.append(key)
+
+    print("keylist1:", keylist1)
+    custlist = []
+    if db in newdblist:
+
+        for doc in doclist1:
+            custlist.append(doc['customer_id'])
+
+        print("custlist:", custlist)
+
+    grouplist = []
+
+    if db in ['Microbot_LookupsDB']:
+        for doc in doclist1:
+            grouplist.append(doc['group'])
+
+    documents = collections.find({})
     query = None
 
-    form = QueryForm(request.POST or None)
+    key = request.GET.get('key' or None)
+    value = request.GET.get('value' or None)
+    query = request.GET.get('query' or None)
+    projection = request.GET.get('projection' or None)
+    customer_id = request.GET.get('customer_id' or None)
+    group = request.GET.get('group' or None)
+    format = request.GET.get('format')
+
+    print("rg:", request.GET)
+
+    print(request.GET.get('key'))
+    print(request.GET.get('value'))
+    print(request.GET.get('query'))
+    print(request.GET.get('projection'))
+    print(request.GET.get('customer_id'))
+    print(request.GET.get('group'))
+
+    querydict = {}
+    if key is not None:
+        querydict[key] = value
+
+    if customer_id is not None:
+        querydict['customer_id'] = customer_id
+
+    if group is not None:
+        querydict['group'] = group
+
+    print("qd:", querydict)
+
+    if query == None and querydict != {}:
+        documents = collections.find(querydict, projection)
+        # elif query != None and querydict != {}:
+    #documents = collections.find({"$and": [querydict, query]}, projection)
+
+    print("key", key)
+    form = QueryForm(request.POST or None, initial={
+        "key": key, "value": value, "query": query, "projection": projection})
+
+    print("rp:", request.POST)
 
     print(request.POST)
+
     if request.method == 'POST':
 
         if 'ids[]' in request.POST:
@@ -399,8 +480,6 @@ def showdocs(request, db, collection):
 
             return redirect('showdocs', db=db, collection=collection)
 
-    if request.method == 'POST':
-
         if 'id' in request.POST:
 
             id = request.POST.get('id')
@@ -416,79 +495,73 @@ def showdocs(request, db, collection):
             except errors.OperationFailure:
                 return redirect('showdocs', db=db, collection=collection)
 
-    if request.method == 'POST':
+        if 'export' in request.POST:
+            format = request.POST.get('format')
+            url = reverse_lazy('showdocs', kwargs={
+                "db": db, "collection": collection}) + "?" + "&format=" + format
 
-        if form.is_valid():
+            mongo_docs = []
+            for document in documents:
+                mongo_docs.append(document)
 
-            if 'export' in request.POST:
+            # print(mongo_docs)
 
-                formatoptions = form.cleaned_data.get('options')
+            if format == "CSV":
+                response = HttpResponse(content_type='text/csv')
+                writer = csv.writer(response)
+                writer.writerow(mongo_docs)
+                datetoday = str(date.today())
+                fname = "" + collection + "_" + datetoday + ".csv"
+                # print(fname)
+                response['Content-Disposition'] = 'attachement; filename="{}"'.format(
+                    fname)
+                return response
+            elif format == "JSON":
+
+                json_data = json.dumps(mongo_docs, default=str)
+                datetoday = str(date.today())
+                fname = "" + collection + "_" + datetoday + ".json"
+                # print(fname)
+                response = HttpResponse(
+                    json_data, content_type='text/json')
+                response['Content-Disposition'] = 'attachement; filename="{}"'.format(
+                    fname)
+
+                return response
+
+        elif 'find' in request.POST:
+
+            if form.is_valid():
                 key = form.cleaned_data.get('key')
                 value = form.cleaned_data.get('value')
                 query = form.cleaned_data.get('query')
                 projection = form.cleaned_data.get('projection')
+                customer_id = request.POST.get('customer_id' or None)
+                group = request.POST.get('group' or None)
 
-                if key != "" and value != "":
-                    querys = {key: value}
-                    documents = collections.find(querys)
+                url = reverse_lazy('showdocs', kwargs={
+                    "db": db, "collection": collection}) + "?"
 
-                elif query != "":
-                    if projection == "":
-                        val = "" + str(query) + ""
-                        # print(val)
-                        documents = collections.find(json.loads(val))
-                    else:
-                        documents = collections.find(
-                            json.loads(query), json.loads(projection))
+                if key != "":
+                    url = url + "key=" + key + "&"
 
-                mongo_docs = []
-                for document in documents:
-                    mongo_docs.append(document)
+                if value != "":
+                    url = url + "value=" + value + "&"
 
-                # print(mongo_docs)
+                if customer_id != None:
+                    url = url + "customer_id=" + customer_id + "&"
 
-                if formatoptions == "csv":
-                    response = HttpResponse(content_type='text/csv')
-                    writer = csv.writer(response)
-                    writer.writerow(mongo_docs)
-                    datetoday = str(date.today())
-                    fname = "" + collection + "_" + datetoday + ".csv"
-                    # print(fname)
-                    response['Content-Disposition'] = 'attachement; filename="{}"'.format(
-                        fname)
-                    return response
-                elif formatoptions == "json":
+                if group != None:
+                    url = url + "group=" + group + "&"
 
-                    json_data = json.dumps(mongo_docs, default=str)
-                    datetoday = str(date.today())
-                    fname = "" + collection + "_" + datetoday + ".json"
-                    # print(fname)
-                    response = HttpResponse(
-                        json_data, content_type='text/json')
-                    response['Content-Disposition'] = 'attachement; filename="{}"'.format(
-                        fname)
+                if query != "":
+                    url = url + "query=" + query + "&"
 
-                    return response
+                if projection != "":
+                    url = url + "projection=" + projection
 
-            elif 'find' in request.POST:
-
-                key = form.cleaned_data.get('key')
-                value = form.cleaned_data.get('value')
-                query = form.cleaned_data.get('query')
-                projection = form.cleaned_data.get('projection')
-
-                if key != "" and value != "":
-                    querys = {key: value}
-                    documents = collections.find(querys)
-
-                elif query != "":
-                    if projection == "":
-                        val = "" + str(query) + ""
-                        # print(val)
-                        documents = collections.find(json.loads(val))
-                    else:
-                        documents = collections.find(
-                            json.loads(query), json.loads(projection))
+                print(url)
+                return redirect(url)
 
     tuplist = []
 
@@ -529,11 +602,128 @@ def showdocs(request, db, collection):
     # print("doclist:", doclist)
     # print("doclistnew:", doclistnew)
 
-    context = {"scroll_list": scroll_list, "form": form, "dbs": clientInstance.list_databases(), "db": db, "collection": collection,
-               "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew, "current_user": user}
+    context = {"count": collections.estimated_document_count(), "scroll_list": scroll_list, "form": form, "dbs": clientInstance.list_databases(), "db": db, "collection": collection,
+               "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew, "current_user": user, "custlist": custlist,
+               "grouplist": grouplist, "customer_id": customer_id, "group": group}
 
     print(request.POST)
     return render(request, "main/documents.html", context=context)
+
+
+'''def _searchdocs(request, db, collection):
+    user = request.session.get('user')
+    if user is None:
+        return redirect('login')
+    clientInstance = clientpool[user]
+
+    collections = get_collection_instance(clientInstance, db, collection)
+    primelist = ['Microbot_AuthUsersDB', 'Microbot_LookupsDB',
+                 'Microbot_MappingsDB', 'Microbot_ProcessLogsDB', 'admin', 'config', 'local']
+
+    dblist = []
+
+    scroll_list = []
+
+    for dbx in clientInstance.list_databases():
+        dblist.append(dbx['name'])
+        # print(dbx)
+
+    # print(dblist)
+
+    for dbx in dblist:
+        scroll_list.append(
+            (dbx, list(clientInstance[dbx].list_collection_names())))
+
+    documents = collections.find({})
+    query = None
+
+    form = QueryForm(request.POST or None)
+
+    if request.method == "POST":
+        option = request.POST.get('options')
+
+        mongo_docs = []
+        for document in documents:
+            mongo_docs.append(document)
+
+        # print(mongo_docs)
+
+        if option == "CSV":
+            response = HttpResponse(content_type='text/csv')
+            writer = csv.writer(response)
+            writer.writerow(mongo_docs)
+            datetoday = str(date.today())
+            fname = "" + collection + "_" + datetoday + ".csv"
+            # print(fname)
+            response['Content-Disposition'] = 'attachement; filename="{}"'.format(
+                fname)
+            return response
+        elif option == "JSON":
+
+            json_data = json.dumps(mongo_docs, default=str)
+            datetoday = str(date.today())
+            fname = "" + collection + "_" + datetoday + ".json"
+            # print(fname)
+            response = HttpResponse(
+                json_data, content_type='text/json')
+            response['Content-Disposition'] = 'attachement; filename="{}"'.format(
+                fname)
+
+            return response
+
+    tuplist = []
+
+    for document in documents:
+        tuplist.append((document['_id'], document))
+
+    # print("tuplist:", tuplist)
+
+    doclist = []
+    for id, doc in tuplist:
+        doclist.append(doc)
+    # print("doclist:", doclist)
+
+    keylist = []
+
+    for doc in doclist:
+        for key in doc.keys():
+            if key not in keylist:
+                keylist.append(key)
+
+    keylist.sort()
+    # print("keylist:", keylist)
+
+    for key in keylist:
+        for doc in doclist:
+            if key not in doc:
+                doc[key] = ""
+    custlist = []
+    if 'customer_id' in keylist:
+
+        for doc in doclist:
+            custlist.append(doc['customer_id'])
+
+        #print("custlist:", custlist)
+
+    grouplist = []
+
+    if 'group' in keylist:
+
+        for doc in doclist:
+            grouplist.append(doc['group'])
+    doclistnew = []
+    for doc in doclist:
+        doc1 = sorted(doc.items())
+        doclistnew.append(dict(doc1))
+
+    tuplistnew = []
+    for doc in doclistnew:
+        tuplistnew.append((doc["_id"], doc))
+
+    context = {"scroll_list": scroll_list, "form": form, "dbs": clientInstance.list_databases(), "db": db, "collection": collection,
+               "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew, "current_user": user, "custlist": custlist,
+               "grouplist": grouplist}
+    return render(request, "main/documents.html", context)'''
 
 
 '''
@@ -570,12 +760,48 @@ def _insertdatabase(request):
     url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
 
     json_data = open(url)
-    data = json.loads(json_data.read())
+    contentfile = json.loads(json_data.read())
 
-    form = DatabaseForm(request.POST or None, initial={
-        "dictionary": (json.dumps(data, indent=4))})
+    filename = request.GET.get('preview')
+    dbname = request.GET.get('dbname')
+    colname = request.GET.get('colname')
+
+    print("filename:", filename)
+    fss = FileSystemStorage()
+    print("fss:", fss)
+    if filename is not None:
+        file = fss.open(filename)
+        contentfile = json.load(file)
+        print("contentfile:", contentfile)
+
+    form = DatabaseForm(request.POST or None, request.FILES or None, initial={
+        "databaseName": dbname, "collectionName": colname,
+        "dictionary": json.dumps(contentfile, indent=4)})
 
     if request.method == 'POST':
+
+        if request.POST["action"] == 'Preview':
+
+            if form.is_valid():
+
+                databaseName = form.cleaned_data.get('databaseName')
+                collectionName = form.cleaned_data.get('collectionName')
+                database = clientInstance[databaseName]
+                collection = database[collectionName]
+
+                if 'myfile' in request.FILES:
+                    if request.method == 'POST':
+                        myfile = request.FILES['myfile']
+                        fss = FileSystemStorage()
+                        file = fss.save(myfile.name, myfile)
+                        file_url = fss.url(file)
+                        print(myfile.name)
+                        print(file_url)
+
+                    url = reverse_lazy('_insertdatabase')
+                    url = url + '?dbname=' + databaseName + '&colname=' + \
+                        collectionName + '&preview=' + str(myfile.name)
+                    return HttpResponseRedirect(url)
 
         if request.POST["action"] == 'Validate':
 
@@ -597,29 +823,28 @@ def _insertdatabase(request):
 
             if form.is_valid():
 
+                filename = request.GET.get('preview')
                 databaseName = form.cleaned_data.get('databaseName')
                 collectionName = form.cleaned_data.get('collectionName')
                 dictionary = form.cleaned_data.get('dictionary')
-
                 databaseName = clientInstance[databaseName]
                 collection = databaseName[collectionName]
 
-                if 'myfile' in request.FILES:
-                    myfile = request.FILES['myfile']
-                    contentfile = json.load(myfile)
-                    form.save()
-                    try:
-                        collection.insert_one(contentfile)
-                    except:
-                        collection.insert_many(contentfile)
-
-                    url = reverse_lazy('showdbs')
-                    return HttpResponseRedirect(url)
-                elif dictionary != "":
+                if dictionary != "":
                     try:
                         json.loads(dictionary)
                         try:
-                            collection.insert_one(json.loads(dictionary))
+                            try:
+                                collection.insert_one(json.loads(dictionary))
+                            except TypeError:
+                                collection.insert_many(json.loads(dictionary))
+
+                            if filename is not None:
+                                fss = FileSystemStorage()
+                                uploadpath = fss.path(filename)
+                                print("up:", uploadpath)
+                                fss.delete(uploadpath)
+
                         except errors.OperationFailure:
                             return redirect('showdbs')
                         url = reverse_lazy('showdbs')
@@ -680,12 +905,45 @@ def _insertcollection(request, db):
     url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
 
     json_data = open(url)
-    data = json.loads(json_data.read())
+    contentfile = json.loads(json_data.read())
 
-    form = CollectionForm(request.POST or None, initial={
-        "dictionary": (json.dumps(data, indent=4))})
+    filename = request.GET.get('preview')
+
+    colname = request.GET.get('colname')
+
+    fss = FileSystemStorage()
+
+    if filename is not None:
+        file = fss.open(filename)
+        contentfile = json.load(file)
+        print("contentfile:", contentfile)
+
+    form = CollectionForm(request.POST or None, request.FILES or None, initial={
+        "collectionName": colname,
+        "dictionary": json.dumps(contentfile, indent=4)})
 
     if request.method == 'POST':
+        if request.POST["action"] == 'Preview':
+
+            if form.is_valid():
+
+                collectionName = form.cleaned_data.get('collectionName')
+                Mycol = clientInstance[db][collectionName]
+
+                if 'myfile' in request.FILES:
+                    if request.method == 'POST':
+                        myfile = request.FILES['myfile']
+                        fss = FileSystemStorage()
+                        file = fss.save(myfile.name, myfile)
+                        file_url = fss.url(file)
+                        print(myfile.name)
+                        print(file_url)
+
+                    url = reverse_lazy('_insertcollection', kwargs={'db': db})
+                    url = url + '?colname=' + collectionName + \
+                        '&preview=' + str(myfile.name)
+                    return HttpResponseRedirect(url)
+
         if request.POST["action"] == 'Validate':
 
             if form.is_valid():
@@ -704,25 +962,33 @@ def _insertcollection(request, db):
         if request.POST["action"] == 'Insert':
 
             if form.is_valid():
+
+                filename = request.GET.get('preview')
                 collectionName = form.cleaned_data.get('collectionName')
                 dictionary = form.cleaned_data.get('dictionary')
 
                 Mycol = clientInstance[db][collectionName]
 
-                if 'myfile' in request.FILES:
-                    myfile = request.FILES['myfile']
-                    contentfile = json.load(myfile)
-                    try:
-                        Mycol.insert_one(contentfile)
-                    except:
-                        Mycol.insert_many(contentfile)
-
-                    url = reverse_lazy('showcollections', kwargs={'db': db})
-                    return HttpResponseRedirect(url)
-                elif dictionary != "":
+                if dictionary != "":
                     try:
                         json.loads(dictionary)
-                        Mycol.insert_one(json.loads(dictionary))
+                        try:
+                            try:
+                                Mycol.insert_one(json.loads(dictionary))
+                            except TypeError:
+                                Mycol.insert_many(json.loads(dictionary))
+
+                            if filename is not None:
+                                fss = FileSystemStorage()
+                                uploadpath = fss.path(filename)
+                                print(filename)
+                                print("up:", uploadpath)
+                                fss.delete(uploadpath)
+
+                        except errors.OperationFailure:
+                            url = reverse_lazy(
+                                'showcollections', kwargs={'db': db})
+                            return HttpResponseRedirect(url)
                         url = reverse_lazy(
                             'showcollections', kwargs={'db': db})
                         return HttpResponseRedirect(url)
@@ -865,11 +1131,39 @@ def _insertdocument(request, db, collection):
         url = '/home/itpauser/donkeyUI/ace/static/mappingTemplates/default.json'
         json_data = open(url)
 
-    data = json.loads(json_data.read())
+    contentfile = json.loads(json_data.read())
+
+    filename = request.GET.get('preview')
+
+    fss = FileSystemStorage()
+
+    if filename is not None:
+        file = fss.open(filename)
+        contentfile = json.load(file)
+        print("contentfile:", contentfile)
+
     form = DocumentForm(request.POST or None, request.FILES or None, initial={
-                        "dictionary": (json.dumps(data, indent=4))})
+                        "dictionary": (json.dumps(contentfile, indent=4))})
 
     if request.method == 'POST':
+
+        if request.POST["action"] == 'Preview':
+
+            if form.is_valid():
+
+                if 'myfile' in request.FILES:
+                    if request.method == 'POST':
+                        myfile = request.FILES['myfile']
+                        fss = FileSystemStorage()
+                        file = fss.save(myfile.name, myfile)
+                        file_url = fss.url(file)
+                        print(myfile.name)
+                        print(file_url)
+
+                    url = reverse_lazy('_insertdocument', kwargs={
+                        'db': db, 'collection': collection})
+                    url = url + '?preview=' + str(myfile.name)
+                    return HttpResponseRedirect(url)
 
         if request.POST["action"] == 'Validate':
 
@@ -886,18 +1180,29 @@ def _insertdocument(request, db, collection):
 
             if form.is_valid():
 
+                filename = request.GET.get('preview')
                 dictionary = form.cleaned_data.get('dictionary')
-                if 'myfile' in request.FILES:
-                    myfile = request.FILES['myfile']
-                    contentfile = json.load(myfile)
-                    collections.insert_one(contentfile)
-                    url = reverse_lazy('showdocs', kwargs={
-                        'db': db, 'collection': collection})
-                    return HttpResponseRedirect(url)
-                elif dictionary != "":
+
+                if dictionary != "":
                     try:
                         json.loads(dictionary)
-                        collections.insert_one(json.loads(dictionary))
+                        try:
+                            try:
+                                collections.insert_one(json.loads(dictionary))
+                            except TypeError:
+                                collections.insert_many(json.loads(dictionary))
+
+                            if filename is not None:
+                                fss = FileSystemStorage()
+                                uploadpath = fss.path(filename)
+                                print(filename)
+                                print("up:", uploadpath)
+                                fss.delete(uploadpath)
+
+                        except errors.OperationFailure:
+                            url = reverse_lazy('showdocs', kwargs={
+                                'db': db, 'collection': collection})
+                            return HttpResponseRedirect(url)
                         url = reverse_lazy('showdocs', kwargs={
                             'db': db, 'collection': collection})
                         return HttpResponseRedirect(url)
@@ -909,6 +1214,7 @@ def _insertdocument(request, db, collection):
     return render(request, "side/insert.html", context)
 
 
+'''
 @login_required
 def _insertdocumentBulk(request, db, collection):
     user = request.session.get('user')
@@ -918,10 +1224,40 @@ def _insertdocumentBulk(request, db, collection):
     collections = get_collection_instance(clientInstance, db, collection)
 
     e = None
-    form = DocumentForm(request.POST or None, request.FILES or None)
+
+    contentfile = []
+
+    filename = request.GET.get('preview')
+
+    fss = FileSystemStorage()
+
+    if filename is not None:
+        file = fss.open(filename)
+        contentfile = json.load(file)
+        print("contentfile:", contentfile)
+
+    form = DocumentForm(request.POST or None, request.FILES or None, initial={
+                        "dictionary": (json.dumps(contentfile, indent=4))})
 
     # form = DocumentForm(request.POST or None)
     if request.method == 'POST':
+        if request.POST["action"] == 'Preview':
+
+            if form.is_valid():
+
+                if 'myfile' in request.FILES:
+                    if request.method == 'POST':
+                        myfile = request.FILES['myfile']
+                        fss = FileSystemStorage()
+                        file = fss.save(myfile.name, myfile)
+                        file_url = fss.url(file)
+                        print(myfile.name)
+                        print(file_url)
+
+                    url = reverse_lazy('_insertdocumentBulk', kwargs={
+                        'db': db, 'collection': collection})
+                    url = url + '?preview=' + str(myfile.name)
+                    return HttpResponseRedirect(url)
 
         if request.POST["action"] == 'Validate':
 
@@ -940,27 +1276,39 @@ def _insertdocumentBulk(request, db, collection):
             if form.is_valid():
 
                 dictionary = form.cleaned_data.get('dictionary')
-
-                if 'myfile' in request.FILES:
-                    myfile = request.FILES['myfile']
-                    contentfile = json.load(myfile)
-                    collections.insert_many(contentfile)
-                    url = reverse_lazy('showdocs', kwargs={
-                        'db': db, 'collection': collection})
-                    return HttpResponseRedirect(url)
-                elif dictionary != "":
+                filename = request.GET.get('preview')
+                if dictionary != "":
                     try:
                         json.loads(dictionary)
-                        collections.insert_many(json.loads(dictionary))
+                        try:
+                            try:
+                                collections.insert_many(json.loads(dictionary))
+                            except TypeError:
+                                e = "You have a single document as an input. Try inserting single document instead!"
+                                url = reverse_lazy('_insertdocumentBulk', kwargs={
+                                    'db': db, 'collection': collection})
+                                return HttpResponseRedirect(url)
+
+                            if filename is not None:
+                                fss = FileSystemStorage()
+                                uploadpath = fss.path(filename)
+                                print(filename)
+                                print("up:", uploadpath)
+                                fss.delete(uploadpath)
+
+                        except errors.OperationFailure:
+                            url = reverse_lazy('showdocs', kwargs={
+                                'db': db, 'collection': collection})
+                            return HttpResponseRedirect(url)
                         url = reverse_lazy('showdocs', kwargs={
                             'db': db, 'collection': collection})
                         return HttpResponseRedirect(url)
                     except ValueError as ex:
                         e = ex
-
     context = {"db": db, "collection": collection,
                "form": form, "e": e, "current_user": user}
     return render(request, "side/insert.html", context)
+'''
 
 
 @login_required

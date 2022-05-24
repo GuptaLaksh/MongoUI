@@ -76,6 +76,9 @@
             
             <div class="form-group">
                 {{ form.myfile }}
+
+                <input type="submit" name="action" value="Preview" class="btn btn-success btn-large pull-right">
+
             </div>
 
             <!--
@@ -112,7 +115,7 @@
 
 
             <div class="form-group">
-                <input type="submit" name="action" value="Validate" class="btn btn-danger btn-large pull-right">
+                <input type="submit" name="action" value="Validate" class="btn btn-danger btn-large">
                 <input type="submit" name="action" value="Insert" class=" btn btn-primary btn-large pull-right">
             </div>
 
@@ -121,7 +124,7 @@
         
     </div>
 
-    <!-- Mainly s<!-- Mainly scripts -->
+    <!-- Mainly scripts -->
     <script src="{% static 'js/jquery-3.1.1.min.js' %} "></script>
     <script src="{% static 'js/popper.min.js' %} "></script>
     <script src="{% static 'js/bootstrap.js' %} "></script>
@@ -187,7 +190,7 @@
 </body>
 <footer class="text-center text-lg-start bg-light text-muted">
   
-    <small>Microbots Mongo UI </small>
+    <small>Microbots UI </small>
     <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
       &copy;  2022 Copyright:
       <a class="text-reset fw-bold" href="https://www.microland.com/">Microland</a>
