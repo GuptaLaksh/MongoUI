@@ -1,0 +1,23 @@
+{
+    "customer_id": "Default_Customer1",
+    "source": "smartcenter",
+    "source_details": {
+        "base_uri": "https://example.example.com/smartcenter/api/v2",
+        "auth_key": "",
+        "update_data": {
+            "resolution_extra_params": {
+                "resoultionCode": "Resolved as per process",
+                "resolutionCategoryName": "Default",
+                "resolutionCustomerConfirmationName": "By Email",
+                "slaExceptionCode": "Call resolved within SLA",
+                "nextSteps": "NA"
+            },
+            "reassign_extra_params": {},
+            "wip_extra_params": {}
+        },
+        "update_options": {
+            "change_priority_on_resolve_for": "",
+            "change_priority_on_resolve_to": ""
+        }
+    }
+}

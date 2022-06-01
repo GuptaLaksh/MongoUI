@@ -1,0 +1,93 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 15px;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.greetings {
+    float: right;
+    margin: auto;
+}
+
+.greetings a {
+    color: black;
+}
+
+.logo {
+    width: 210px;
+    margin-bottom: auto;
+}
+
+th.prime,
+td.prime {
+    text-align: center;
+}
+
+.greetings button {
+    padding: 2px 2px 0px 0px;
+}
+
+.prime button a {
+    text-decoration: none;
+    color: white;
+}
+
+.right {
+    float: right;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul li {
+    position: relative;
+}
+
+li ul {
+    position: absolute;
+    left: 210px;
+    top: 0;
+    display: none;
+}
+
+ul li a {
+    display: block;
+    text-decoration: none;
+    color: rgb(14, 9, 9);
+    background: #fff;
+    padding: 5px;
+    border: 1px solid rgb(27, 1, 1);
+    border-bottom: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 210px;
+    border-bottom: 1px solid #ccc;
+}
+
+li:hover ul,
+li.over ul {
+    display: block;
+}

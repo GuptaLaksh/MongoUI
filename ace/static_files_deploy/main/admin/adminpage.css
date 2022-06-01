@@ -1,0 +1,64 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+
+span {
+    margin-top: 30px;
+}
+
+th.prime,
+td.prime {
+    text-align: center;
+}
+
+.prime button a {
+    text-decoration: none;
+    color: white;
+}
+
+.point {
+    cursor: pointer;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 15px;
+}
+
+.logo {
+    width: 210px;
+    margin-bottom: 20px;
+}
+
+.greetings {
+    float: right;
+    margin: auto;
+}
+
+#editor {
+    cursor: default;
+}
+
+textarea {
+    color: white;
+    background-color: #04071c;
+    caret-color: orangered;
+    overflow: auto;
+    border: solid 15px grey;
+}
+
+#checkboxes ul {
+    margin: 0;
+    list-style: none;
+}

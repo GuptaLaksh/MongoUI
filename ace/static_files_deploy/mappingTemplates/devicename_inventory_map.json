@@ -1,0 +1,9 @@
+{
+    "key": "default_devicename",
+    "value": 1,
+    "os": "linux",
+    "ip_address": "10.0.0.1",
+    "group": "default_group",
+    "status": "Dev",
+    "customer_id": "Default_Customer"
+}

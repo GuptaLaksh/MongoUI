@@ -602,7 +602,7 @@ def showdocs(request, db, collection):
     # print("doclist:", doclist)
     # print("doclistnew:", doclistnew)
 
-    context = {"count": collections.estimated_document_count(), "scroll_list": scroll_list, "form": form, "dbs": clientInstance.list_databases(), "db": db, "collection": collection,
+    context = {"count": len(doclistnew), "scroll_list": scroll_list, "form": form, "dbs": clientInstance.list_databases(), "db": db, "collection": collection,
                "tuplist": tuplistnew, "primelist": primelist, "keylist": keylist, "doclist": doclistnew, "current_user": user, "custlist": custlist,
                "grouplist": grouplist, "customer_id": customer_id, "group": group}
 
